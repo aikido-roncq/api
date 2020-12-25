@@ -1,0 +1,46 @@
+version: '3.1'
+
+services:
+  php:
+    container_name: 'aikido-php'
+    build: './'
+    depends_on:
+      - db
+    ports:
+      - '8000:80'
+    volumes:
+      - './:/var/www/html'
+
+  db:
+    image: mysql:5.6
+    container_name: 'aikido-database'
+    environment:
+      MYSQL_DATABASE: aikidorote1989
+      MYSQL_ROOT_PASSWORD: root
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "9906:3306"
+    volumes:
+      - ./dump:/docker-entrypoint-initdb.d
+      - persistent:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: 'aikido-phpmyadmin'
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    environment:
+      PMA_USER: root
+      PMA_PASSWORD: root
+
+  maildev:
+    image: maildev/maildev
+    container_name: 'aikido-maildev'
+    ports:
+      - "1080:80"
+      - "1025:1025"
+
+volumes:
+  persistent:

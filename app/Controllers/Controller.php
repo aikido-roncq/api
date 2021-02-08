@@ -19,11 +19,12 @@ class Controller
 
     private static function answer($success, $arg, int $responseCode)
     {
-        self::headers([
-            'Content-Type' => 'application/json; charset=UTF-8',
-            'Access-Control-Allow-Credentials' => 'true',
-            'Access-Control-Allow-Origin' => 'http://localhost:8000'
-        ]);
+        self::headers(['Content-Type' => 'application/json; charset=UTF-8']);
+
+        if ($_ENV['APP_ENV'] == 'dev')
+            self::headers([
+                'Access-Control-Allow-Origin' => '*'
+            ]);
 
         http_response_code($responseCode);
 

@@ -62,6 +62,12 @@ class Router
         return $this;
     }
 
+    public function options(string $url, string $target, string $name = null)
+    {
+        $this->router->map('OPTIONS', $url, $target, $name);
+        return $this;
+    }
+
     public function notFound()
     {
         http_response_code(404);

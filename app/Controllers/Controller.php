@@ -6,7 +6,6 @@ use App\Exceptions\LoggedOutException;
 use App\Models\Connections;
 use App\Utils;
 use Exception;
-use GUMP;
 
 class Controller
 {
@@ -17,30 +16,38 @@ class Controller
         $this->viewPath = $viewPath;
     }
 
-    private static function answer($success, $arg, int $responseCode)
+    private static function answer($data, int $responseCode)
     {
-        self::headers(['Content-Type' => 'application/json; charset=UTF-8']);
+        self::headers([
+            'Content-Type' => 'application/json; charset=UTF-8',
+            'Access-Control-Allow-Methods' => 'GET,POST,PUT,PATCH,DELETE,OPTIONS'
+        ]);
 
         if ($_ENV['APP_ENV'] == 'dev')
             self::headers([
                 'Access-Control-Allow-Origin' => '*'
             ]);
 
-        http_response_code($responseCode);
+        self::status($responseCode);
 
-        echo json_encode($success ? $arg : ['message' => $arg]);
+        echo json_encode($data);
 
         die();
     }
 
-    protected static function send($value, int $responseCode = 200)
+    protected static function send($data = null, int $responseCode = 200)
     {
-        self::answer(true, $value, $responseCode);
+        self::answer($data, $responseCode);
     }
 
     protected static function error($message, int $responseCode)
     {
-        self::answer(false, $message, $responseCode);
+        self::answer(compact('message'), $responseCode);
+    }
+
+    protected static function status(int $responseCode)
+    {
+        http_response_code($responseCode);
     }
 
     protected static function readData()

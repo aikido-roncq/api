@@ -42,6 +42,8 @@ class App
             ->post('/logout', 'Users#logout')
             ->post('/contact', 'Users#contact')
 
+            ->options('/[*]', 'Cors#preflight')
+
             ->run();
     }
 }

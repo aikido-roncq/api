@@ -69,7 +69,7 @@ class ArticlesControllerTest extends ControllerTest
     {
         $this->expectExceptionCode(401);
         $this->client->post(self::BASE_URI, [
-            'form_params' => [
+            'json' => [
                 'title' => 'Sample title',
                 'content' => 'Sample content'
             ]
@@ -81,7 +81,7 @@ class ArticlesControllerTest extends ControllerTest
         $this->login();
 
         $res = $this->client->post(self::BASE_URI, [
-            'form_params' => [
+            'json' => [
                 'title' => 'Sample title',
                 'content' => 'Sample content'
             ]
@@ -99,7 +99,7 @@ class ArticlesControllerTest extends ControllerTest
         $existingTitle = $this->first('title');
 
         $res = $this->client->post(self::BASE_URI, [
-            'form_params' => [
+            'json' => [
                 'title' => $existingTitle,
                 'content' => 'Sample content'
             ]
@@ -172,7 +172,7 @@ class ArticlesControllerTest extends ControllerTest
         $firstSlug = $this->first();
 
         $this->client->patch(self::BASE_URI . "/$firstSlug", [
-            'form_params' => [
+            'json' => [
                 'title' => 'My new title'
             ]
         ]);
@@ -184,7 +184,7 @@ class ArticlesControllerTest extends ControllerTest
         $this->login();
         $randomSlug = self::randomStr();
         $this->client->patch(self::BASE_URI . "/$randomSlug", [
-            'form_params' => [
+            'json' => [
                 'title' => 'My new title'
             ]
         ]);
@@ -197,7 +197,7 @@ class ArticlesControllerTest extends ControllerTest
         $randomTitle = self::randomStr();
         [, $oldArticle] = $this->get(self::BASE_URI . "/$firstSlug");
         $res = $this->client->patch(self::BASE_URI . "/$firstSlug", [
-            'form_params' => [
+            'json' => [
                 'title' => $randomTitle
             ]
         ]);
@@ -219,7 +219,7 @@ class ArticlesControllerTest extends ControllerTest
         $this->login();
         $firstSlug = $this->first();
         $res = $this->client->patch(self::BASE_URI . "/$firstSlug", [
-            'form_params' => [
+            'json' => [
                 'title' => 'Some title',
                 'field0' => 'test',
                 'field1' => 'somedata'

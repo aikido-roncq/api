@@ -61,6 +61,8 @@ class UsersController extends Controller
 
     public function contact()
     {
+        $_POST = self::readData();
+
         $validData = self::validate($_POST, [
             'name' => 'required',
             'email' => 'required|valid_email',

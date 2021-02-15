@@ -42,6 +42,8 @@ class EventsController extends Controller
     {
         $this->watchdog();
 
+        $_POST = self::readData();
+
         $validData = self::validate($_POST, [
             'title' => 'required',
             'info' => 'required',

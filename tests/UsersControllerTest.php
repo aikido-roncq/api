@@ -65,9 +65,9 @@ class UsersControllerTest extends ControllerTest
     {
         $this->expectExceptionCode(400);
         $this->client->post('/contact', [
-            'form_data' => [
+            'json' => [
                 'name' => 'John'
-            ]
+            ],
         ]);
     }
 
@@ -75,7 +75,7 @@ class UsersControllerTest extends ControllerTest
     {
         $this->expectExceptionCode(400);
         $this->client->post('/contact', [
-            'form_data' => [
+            'json' => [
                 'name' => 'John',
                 'email' => 'wrong.email',
                 'content' => 'empty'

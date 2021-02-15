@@ -29,6 +29,8 @@ class ArticlesController extends Controller
     {
         $this->watchdog();
 
+        $_POST = self::readData();
+
         try {
             $article = Articles::create($_POST);
         } catch (Exception $e) {

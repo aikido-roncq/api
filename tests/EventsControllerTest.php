@@ -73,7 +73,7 @@ class EventsControllerTest extends ControllerTest
         $this->login();
         $this->expectExceptionCode(400);
         $this->client->post(self::BASE_URI, [
-            'form_params' => [
+            'json' => [
                 'title' => 'New title',
                 'end_date' => '2021-09-04',
             ]
@@ -85,7 +85,7 @@ class EventsControllerTest extends ControllerTest
         $this->login();
         $this->expectExceptionCode(400);
         $this->client->post(self::BASE_URI, [
-            'form_params' => [
+            'json' => [
                 'title' => 'New title',
                 'info' => 'Some info',
                 'start_date' => '2021-09-05',
@@ -106,7 +106,7 @@ class EventsControllerTest extends ControllerTest
         ];
 
         $res = $this->client->post(self::BASE_URI, [
-            'form_params' => $data
+            'json' => $data
         ]);
 
         $event = self::getBody($res);
@@ -155,7 +155,7 @@ class EventsControllerTest extends ControllerTest
 
         $this->expectExceptionCode(401);
         $this->client->patch(self::BASE_URI . "/$firstId", [
-            'form_params' => [
+            'json' => [
                 'title' => 'New title'
             ]
         ]);
@@ -168,7 +168,7 @@ class EventsControllerTest extends ControllerTest
 
         $this->expectExceptionCode(404);
         $this->client->patch(self::BASE_URI . "/$id", [
-            'form_params' => [
+            'json' => [
                 'title' => 'New title'
             ]
         ]);
@@ -180,7 +180,7 @@ class EventsControllerTest extends ControllerTest
         $firstId = $this->first();
 
         $res = $this->client->patch(self::BASE_URI . "/$firstId", [
-            'form_params' => [
+            'json' => [
                 'title' => 'New title'
             ]
         ]);

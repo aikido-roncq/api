@@ -29,6 +29,8 @@ class GalleryController extends Controller
     {
         $this->watchdog();
 
+        $_POST = self::readData();
+
         $validData = self::validate($_POST + $_FILES, [
             'caption' => 'optional',
             'image' => 'required_file'

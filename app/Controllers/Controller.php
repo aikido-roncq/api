@@ -45,8 +45,7 @@ class Controller
 
     protected static function readData()
     {
-        parse_str(file_get_contents('php://input'), $res);
-        return $res;
+        return json_decode(file_get_contents('php://input'), true);
     }
 
     protected static function headers(array $headers)

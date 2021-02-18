@@ -1,4 +1,4 @@
-FROM php:7.3-apache
+FROM php:8.0-apache
 
 COPY .docker/000-default.conf /etc/apache2/sites-available/000-default.conf
 

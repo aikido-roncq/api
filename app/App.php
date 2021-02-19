@@ -2,48 +2,70 @@
 
 namespace App;
 
+use App\Attributes\Route;
+use App\Controllers\ArticlesController;
+use App\Controllers\CorsController;
+use App\Controllers\EventsController;
+use App\Controllers\GalleryController;
+use App\Controllers\UsersController;
+use Slim\Factory\AppFactory as SlimAppFactory;
+use Valitron\Validator;
+use Slim\App as SlimApp;
 use Dotenv\Dotenv;
-use GUMP;
+use ReflectionClass;
 
 define('ROOT', dirname(__DIR__));
 
 class App
 {
-    private $viewPath = ROOT . '/app/Views';
+  public const VIEWS_PATH = ROOT . '/app/Views';
 
-    public function __construct()
-    {
-        Dotenv::createImmutable(ROOT)->load();
+  const CONTROLLERS = [
+    ArticlesController::class,
+    CorsController::class,
+    EventsController::class,
+    GalleryController::class,
+    UsersController::class,
+  ];
 
-        error_reporting($_ENV['APP_ENV'] == 'prod' ? 0 : E_ALL);
+  public function __construct()
+  {
+    Dotenv::createImmutable(ROOT)->load();
+    Validator::lang('fr');
+    $app = SlimAppFactory::create();
+    self::registerControllers($app);
+    $app->run();
+  }
 
-        GUMP::add_validator('optional', function () {
-            return true;
-        }, '');
+  private static function registerControllers(SlimApp $app)
+  {
+    foreach (self::CONTROLLERS as $controller)
+      self::registerController($controller, $app);
+  }
 
-        (new Router($this->viewPath))
+  private static function registerController(string $controller, SlimApp $app)
+  {
+    $reflection = new ReflectionClass($controller);
+    $classAttributes = $reflection->getAttributes();
+    $methods = $reflection->getMethods();
+    $prefix = '';
 
-            ->get('/articles', 'Articles#all')
-            ->get('/articles/[*:slug]', 'Articles#find')
-            ->post('/articles', 'Articles#add')
-            ->patch('/articles/[*:slug]', 'Articles#edit')
-            ->delete('/articles/[*:slug]', 'Articles#delete')
+    if ($classAttributes)
+      $prefix = $classAttributes[0]->newInstance()->getPath();
 
-            ->get('/events', 'Events#all')
-            ->get('/events/[i:id]', 'Events#find')
-            ->post('/events', 'Events#add')
-            ->patch('/events/[i:id]', 'Events#edit')
-            ->delete('/events/[i:id]', 'Events#delete')
+    foreach ($methods as $method) {
+      $attributes = $method->getAttributes(Route::class);
 
-            ->get('/gallery', 'Gallery#all')
-            ->post('/gallery', 'Gallery#add')
+      foreach ($attributes as $attribute) {
+        $route = $attribute->newInstance();
+        [$httpMethod, $path] = [$route->getMethod(), $route->getPath()];
 
-            ->post('/login', 'Users#login')
-            ->post('/logout', 'Users#logout')
-            ->post('/contact', 'Users#contact')
-
-            ->options('/[*]', 'Cors#preflight')
-
-            ->run();
+        $app->map(
+          [$httpMethod],
+          $prefix . $path,
+          [new $controller(), $method->getName()]
+        );
+      }
     }
+  }
 }

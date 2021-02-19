@@ -3,73 +3,82 @@
 namespace App\Controllers;
 
 use App\Models\Articles;
+use App\Attributes\Route;
+use App\Exceptions\LoggedOutException;
+use App\Utils;
 use Exception;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 
+#[Route('/articles')]
 class ArticlesController extends Controller
 {
-    public function all()
-    {
-        self::send(Articles::orderBy('date', 'desc'));
+  #[Route('[/]', 'GET')]
+  public function all(Request $req, Response $res)
+  {
+    return self::send($res, Articles::orderBy('date', 'desc'));
+  }
+
+  #[Route('/{slug}', 'GET')]
+  public function find(Request $req, Response $res, array $args)
+  {
+    try {
+      $article = Articles::find($args['slug']);
+    } catch (Exception $e) {
+      return self::error($res, $e);
     }
 
-    public function find(string $slug)
-    {
-        try {
-            $article = Articles::find($slug);
-        } catch (Exception $e) {
-            self::error($e->getMessage(), $e->getCode());
-        }
+    return self::send($res, $article);
+  }
 
-        self::send($article);
+  #[Route('[/]', 'POST')]
+  public function add(Request $req, Response $res)
+  {
+    if (!self::isLoggedIn($req))
+      return self::error($res, new LoggedOutException());
+
+    $data = self::readData();
+
+    try {
+      $article = Articles::create($data);
+    } catch (Exception $e) {
+      return self::error($res, $e);
     }
 
-    /* --------------------------------------------------------------------- */
+    return self::send($res, $article, 201);
+  }
 
-    public function add()
-    {
-        $this->watchdog();
+  #[Route('/{slug}', 'DELETE')]
+  public function delete(Request $req, Response $res, array $args)
+  {
+    if (!self::isLoggedIn($req))
+      return self::error($res, new LoggedOutException());
 
-        $_POST = self::readData();
-
-        try {
-            $article = Articles::create($_POST);
-        } catch (Exception $e) {
-            self::error($e->getMessage(), $e->getCode());
-        }
-
-        self::send($article, 201);
+    try {
+      $article = Articles::delete($args['slug']);
+    } catch (Exception $e) {
+      self::error($res, $e);
     }
 
-    public function delete(string $slug)
-    {
-        $this->watchdog();
+    return self::send($res, $article);
+  }
 
-        try {
-            $article = Articles::delete($slug);
-        } catch (Exception $e) {
-            self::error($e->getMessage(), $e->getCode());
-        }
+  #[Route('/{slug}', 'PATCH')]
+  public function edit(Request $req, Response $res, array $args)
+  {
+    if (!self::isLoggedIn($req))
+      return self::error($res, new LoggedOutException());
 
-        self::send($article);
+    $data = self::readData();
+
+    $data = Utils::filterKeys($data, ['title', 'content']);
+
+    try {
+      $article = Articles::update($args['slug'], array_filter($data));
+    } catch (Exception $e) {
+      self::error($res, $e);
     }
 
-    public function edit(string $slug)
-    {
-        $this->watchdog();
-
-        $_PATCH = self::readData();
-
-        $data = self::validate($_PATCH, [
-            'title' => 'optional',
-            'content' => 'optional'
-        ]);
-
-        try {
-            $article = Articles::update($slug, array_filter($data));
-        } catch (Exception $e) {
-            self::error($e->getMessage(), $e->getCode());
-        }
-
-        self::send($article);
-    }
+    return self::send($res, $article);
+  }
 }

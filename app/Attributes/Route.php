@@ -4,13 +4,13 @@ namespace App\Attributes;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_METHOD)]
+#[Attribute(Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
 class Route
 {
   private string $path;
   private string $method;
 
-  public function __construct(string $path, string $method)
+  public function __construct(string $path, string $method = '')
   {
     $this->path = $path;
     $this->method = $method;

@@ -28,10 +28,8 @@ class UsersControllerTest extends ControllerTest
     public function testLoginSuccessful()
     {
         $res = $this->login();
-        $body = self::getBody($res);
         $this->assertEquals(200, $res->getStatusCode());
         $this->assertTrue($res->hasHeader('Set-Cookie'));
-        $this->assertArrayHasKey('message', $body);
     }
 
     // ========================================================================
@@ -40,16 +38,10 @@ class UsersControllerTest extends ControllerTest
 
     public function testLogoutSuccessful()
     {
+        $this->login();
         $res = $this->client->post('/logout');
         $this->assertEquals(205, $res->getStatusCode());
-    }
-
-    public function testCannotPostAfterLogout()
-    {
-        $this->login();
-        $this->client->post('/logout');
-        $this->expectExceptionCode(401);
-        $this->postAnArticle();
+        $this->assertTrue($res->hasHeader('Set-Cookie'));
     }
 
     public function testLogoutWhenNotLoggedIn()

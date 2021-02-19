@@ -9,9 +9,9 @@ use App\Factory;
 
 abstract class Model
 {
-    protected static $pk;
-    protected static $rules;
-    protected static $labels;
+    protected static string $pk;
+    protected static array $rules;
+    protected static array $labels;
 
     public function __construct(array $fields)
     {
@@ -32,9 +32,7 @@ abstract class Model
         return strtolower(end($className));
     }
 
-    /* --------------------------------------------------------------------- */
-
-    public static function find($key)
+    public static function find(string $key)
     {
         $row = self::builder()
             ->select()
@@ -49,7 +47,7 @@ abstract class Model
         return new static($row);
     }
 
-    public static function all($conditions = [])
+    public static function all(array $conditions = [])
     {
         $rows = self::builder()
             ->select()
@@ -104,7 +102,7 @@ abstract class Model
         return new static($entry);
     }
 
-    public static function delete($key)
+    public static function delete(string $key)
     {
         $entry = self::find($key);
 
@@ -117,7 +115,7 @@ abstract class Model
         return $entry;
     }
 
-    public static function update($key, $new_fields)
+    public static function update(string $key, array $new_fields)
     {
         $fields = get_object_vars(self::find($key));
         $updated = array_merge($fields, $new_fields);

@@ -2,33 +2,37 @@
 
 namespace App\Models;
 
+use App\Exceptions\ValidationException;
+use App\Utils;
 use Cocur\Slugify\Slugify;
+use InvalidArgumentException;
 
 class Articles extends Model
 {
-    protected static $pk = 'slug';
+    protected static string $pk = 'slug';
 
-    protected static $rules = [
-        'slug' => 'required',
-        'title' => 'required|between_len,3;50',
-        'content' => 'required|min_len,3'
+    protected static array $rules = [
+        'required' => ['slug', 'title', 'content'],
+        'lengthBetween' => ['title', 3, 50],
+        'lengthMin' => ['content', 3],
     ];
 
-    protected static $filters = [
-        'title' => 'trim|sanitize_string',
-        'content' => 'trim'
+    protected static array $labels = [
+        'title' => 'Le titre',
+        'content' => 'Le contenu'
     ];
 
     protected static function make(array $fields = [])
     {
-        $fields['slug'] = self::slugify($fields['title'] ?? '');
-        $validData = static::validate($fields, self::$rules, self::$filters);
+        if (array_key_exists('title', $fields))
+            $fields['slug'] = self::slugify($fields['title']);
+
+        $validData = Utils::filterKeys($fields, ['slug', 'title', 'content']);
+
         return new self($validData);
     }
 
-    /* --------------------------------------------------------------------- */
-
-    public static function update($key, $new_fields)
+    public static function update(string $key, array $new_fields)
     {
         if (array_key_exists('title', $new_fields))
             $new_fields['slug'] = self::slugify($new_fields['title']);
@@ -36,10 +40,10 @@ class Articles extends Model
         return parent::update($key, $new_fields);
     }
 
-    /* --------------------------------------------------------------------- */
-
     private static function slugify(string $title)
     {
-        return (new Slugify)->slugify($title) . '-' . bin2hex(random_bytes(2));
+        $slug = (new Slugify)->slugify($title);
+        $token = bin2hex(random_bytes(2));
+        return  "$slug-$token";
     }
 }

@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Exceptions\NotFoundException;
 use App\Exceptions\UnknownException;
+use App\Exceptions\ValidationException;
 use Ludal\QueryBuilder\QueryBuilder;
 use App\Factory;
+use App\Utils;
 
 abstract class Model
 {
@@ -15,6 +17,11 @@ abstract class Model
 
     public function __construct(array $fields)
     {
+        $v = Utils::validate($fields, static::$rules, static::$labels);
+
+        if (!$v->validate())
+            throw new ValidationException($v->errors());
+
         foreach ($fields as $key => $value)
             $this->$key = $value;
     }

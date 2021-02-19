@@ -1,4 +1,5 @@
 <?php
+
 /* Variables:
     - $name (user's name)
     - $email (user's email address)
@@ -18,7 +19,9 @@
 
     <br>
 
-    <a href="mailto:<?= $email ?>" style="color: white; text-decoration: none; padding: .6em 1em; border-radius: .2em; background:red">Répondre</a>
+    <a href="mailto:<?= $email ?>" style="color: white; text-decoration: none; padding: .6em 1em; border-radius: .2em; background:red">
+        Répondre
+    </a>
 </body>
 
 </html>

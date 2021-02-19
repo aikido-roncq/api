@@ -6,6 +6,7 @@ use App\Attributes\Route;
 use App\Exceptions\LoggedOutException;
 use App\Models\Connections;
 use App\Config;
+use App\Exceptions\UnknownException;
 use App\Utils;
 use Exception;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -42,7 +43,7 @@ class UsersController extends Controller
     try {
       $connection = Connections::create();
     } catch (Exception $e) {
-      return self::error($res, $e->getMessage(), $e->getCode());
+      return self::error($res, $e);
     }
 
     $token = $connection->token;
@@ -60,7 +61,7 @@ class UsersController extends Controller
       Connections::revoke(self::extractToken($req));
     } catch (LoggedOutException $e) {
     } catch (Exception $e) {
-      self::error($res, $e->getMessage(), $e->getCode());
+      self::error($res, $e);
     }
 
     return $res
@@ -85,10 +86,13 @@ class UsersController extends Controller
     if (!$v->validate())
       return self::badRequest($res, $v->errors());
 
-    if (self::sendMail($data))
-      return self::send($res, ['message' => 'Votre message a été envoyé avec succès.']);
+    try {
+      self::sendMail($data);
+    } catch (Exception $e) {
+      return self::error($res, $e);
+    }
 
-    return self::error($res, 'Une erreur est survenue. Merci de réessayer plus tard.', 500);
+    return self::send($res, ['message' => 'Votre message a été envoyé avec succès.']);
   }
 
   public static function sendMail(array $data)
@@ -109,6 +113,7 @@ class UsersController extends Controller
     $mail->Subject = 'Nouveau message via aikido-roncq.fr';
     $mail->Body = self::getView('mail', $data);
 
-    return $mail->send();
+    if (!$mail->send())
+      throw new UnknownException();
   }
 }

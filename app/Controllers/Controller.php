@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\App;
 use App\Exceptions\LoggedOutException;
 use App\Models\Connections;
+use Exception;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
@@ -27,10 +28,10 @@ class Controller
       ->withStatus($code);
   }
 
-  protected static function error(Response $res, string $message, int $code)
+  protected static function error(Response $res, Exception $e)
   {
-    return self::json($res, compact('message'))
-      ->withStatus($code);
+    return self::json($res, ['message' => $e->getMessage()])
+      ->withStatus($e->getCode());
   }
 
   protected static function badRequest(Response $res, array $errors)

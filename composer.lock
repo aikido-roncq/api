@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e78433d60a74605973d4dce47dd68224",
+    "content-hash": "356d297369dc4ac309bc98c277f99a6e",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -1352,65 +1352,63 @@
             "time": "2020-09-14T15:57:31+00:00"
         },
         {
-            "name": "wixel/gump",
-            "version": "v1.12.1",
+            "name": "vlucas/valitron",
+            "version": "v1.4.9",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Wixel/GUMP.git",
-                "reference": "e8416a3942f8e868c930e3577e12ba23ef02e8fe"
+                "url": "https://github.com/vlucas/valitron.git",
+                "reference": "81515dcc951e1f636a1a18ece2f4154dfa123438"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Wixel/GUMP/zipball/e8416a3942f8e868c930e3577e12ba23ef02e8fe",
-                "reference": "e8416a3942f8e868c930e3577e12ba23ef02e8fe",
+                "url": "https://api.github.com/repos/vlucas/valitron/zipball/81515dcc951e1f636a1a18ece2f4154dfa123438",
+                "reference": "81515dcc951e1f636a1a18ece2f4154dfa123438",
                 "shasum": ""
             },
             "require": {
-                "ext-bcmath": "*",
-                "ext-iconv": "*",
-                "ext-intl": "*",
-                "ext-json": "*",
-                "ext-mbstring": "*",
-                "php": ">=7.0"
+                "php": ">=5.3.2"
             },
             "require-dev": {
-                "kamermans/docblock-reflection": "^1.0",
-                "maddhatter/markdown-table": "^1.0",
-                "mockery/mockery": "^1.3",
-                "php-coveralls/php-coveralls": "^2.2",
-                "phpunit/phpunit": "^6"
+                "phpunit/phpunit": "^4.8.35 || ^5.5 || ^6.5"
+            },
+            "suggest": {
+                "ext-mbstring": "It can support the multiple bytes string length."
             },
             "type": "library",
             "autoload": {
-                "files": [
-                    "gump.class.php"
-                ],
                 "psr-4": {
-                    "GUMP\\": "src/"
+                    "Valitron\\": "src/Valitron"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "BSD-3-Clause"
             ],
             "authors": [
                 {
-                    "name": "Sean Nieuwoudt",
-                    "homepage": "https://wixelhq.com"
-                },
-                {
-                    "name": "Filis Futsarov",
-                    "homepage": "https://filis.me"
+                    "name": "Vance Lucas",
+                    "email": "vance@vancelucas.com",
+                    "homepage": "http://www.vancelucas.com"
                 }
             ],
-            "description": "A fast, extensible & stand-alone PHP input validation class that allows you to validate any data.",
-            "homepage": "https://wixelhq.com/",
+            "description": "Simple, elegant, stand-alone validation library with NO dependencies",
+            "homepage": "http://github.com/vlucas/valitron",
             "keywords": [
-                "validate",
+                "valid",
                 "validation",
                 "validator"
             ],
-            "time": "2020-12-13T17:54:26+00:00"
+            "support": {
+                "issues": "https://github.com/vlucas/valitron/issues",
+                "source": "https://github.com/vlucas/valitron/tree/v1.4.9"
+            },
+            "funding": [
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/vlucas/valitron",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-12-01T11:14:45+00:00"
         }
     ],
     "packages-dev": [

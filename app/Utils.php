@@ -2,33 +2,47 @@
 
 namespace App;
 
-use GUMP;
-use InvalidArgumentException;
+use App\Exceptions\ValidationException;
+use Valitron\Validator;
 
 abstract class Utils
 {
-    public static function validate(array $data, array $rules, array $filters = [])
+    public static function validate(array $data, array $rules, array $labels = [])
     {
-        $g = new GUMP($_ENV['APP_LANG']);
+        $v = new Validator($data);
 
-        $g->validation_rules($rules);
-        $g->filter_rules($filters);
-        $g->run($data);
+        $v->rules($rules);
+        $v->labels($labels);
 
-        if ($g->errors()) {
-            $errors = array_map(function ($error) {
-                return "$error.";
-            }, $g->get_errors_array());
-            $errorsStr = implode(' ', $errors);
-            throw new InvalidArgumentException($errorsStr, 400);
+        if (!$v->validate())
+            throw new ValidationException($v->errors());
+
+        return self::validData($data, $rules);
+    }
+
+    private static function validData(array $array, array $rules)
+    {
+        $rulesKeys = self::flattenArray($rules);
+
+        return array_filter($array, function ($key) use ($rulesKeys) {
+            return in_array($key, $rulesKeys);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    private static function flattenArray(array $array)
+    {
+        $result = [];
+        $queue = $array;
+
+        while ($queue) {
+            $value = array_shift($queue);
+
+            if (is_array($value))
+                array_unshift($queue, ...array_values($value));
+            else
+                $result[] = $value;
         }
 
-        $allowed = array_keys($rules);
-
-        $validData = array_filter($data, function ($key) use ($allowed) {
-            return in_array($key, $allowed);
-        }, ARRAY_FILTER_USE_KEY);
-
-        return $validData;
+        return $result;
     }
 }

@@ -10,12 +10,14 @@ class Connections extends Model
     protected static $pk = 'token';
 
     protected static $rules = [
-        'token' => 'required',
-        'iat' => 'required|date,Y-m-d H:i:s',
-        'exp' => 'required|date,Y-m-d H:i:s',
+        'required' => ['token', 'iat', 'exp'],
+        'dateFormat' => [
+            ['iat', 'Y-m-d H:i:s'],
+            ['exp', 'Y-m-d H:i:s'],
+        ]
     ];
 
-    protected static $filters = [];
+    protected static $labels = [];
 
     public static function make(array $fields = [])
     {

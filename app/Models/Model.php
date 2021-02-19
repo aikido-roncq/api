@@ -6,15 +6,12 @@ use App\Exceptions\NotFoundException;
 use App\Exceptions\UnknownException;
 use Ludal\QueryBuilder\QueryBuilder;
 use App\Factory;
-use App\Utils;
-use GUMP;
-use InvalidArgumentException;
 
 abstract class Model
 {
     protected static $pk;
     protected static $rules;
-    protected static $filters;
+    protected static $labels;
 
     public function __construct(array $fields)
     {
@@ -23,11 +20,6 @@ abstract class Model
     }
 
     protected abstract static function make(array $fields = []);
-
-    protected static function validate(array $fields, array $rules, array $filters = [])
-    {
-        return Utils::validate($fields, $rules, $filters);
-    }
 
     protected static function builder()
     {

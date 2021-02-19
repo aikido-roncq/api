@@ -95,7 +95,7 @@ class UsersController extends Controller
     return self::send($res, ['message' => 'Votre message a été envoyé avec succès.']);
   }
 
-  public static function sendMail(array $data)
+  private static function sendMail(array $data)
   {
     $data = Utils::filterKeys($data, ['name', 'email', 'content']);
     $data['content'] = htmlentities($data['content']);

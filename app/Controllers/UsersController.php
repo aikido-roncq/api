@@ -2,101 +2,119 @@
 
 namespace App\Controllers;
 
+use App\Attributes\Route;
 use App\Exceptions\LoggedOutException;
 use App\Models\Connections;
 use App\Config;
+use App\Utils;
 use Exception;
 use PHPMailer\PHPMailer\PHPMailer;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 
 class UsersController extends Controller
 {
-    public function login()
-    {
-        $success = ['message' => 'Connexion réussie.'];
+  #[Route('/login', 'POST')]
+  public function login(Request $req, Response $res)
+  {
+    if (self::isLoggedIn($req))
+      return $res->withStatus(200);
 
-        if ($this->isLoggedIn())
-            self::send($success, 200);
+    $v = Utils::validate($_SERVER, [
+      'required' => ['PHP_AUTH_USER', 'PHP_AUTH_PW']
+    ], [
+      'PHP_AUTH_USER' => 'Le login',
+      'PHP_AUTH_PW' => 'Le mot de passe'
+    ]);
 
-        self::validate($_SERVER, [
-            'PHP_AUTH_USER' => 'required',
-            'PHP_AUTH_PW' => 'required'
-        ]);
+    if (!$v->validate())
+      return self::badRequest($res, $v->errors());
 
-        [$user, $pw] = [$_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']];
+    [$user, $pw] = [$_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']];
 
-        if ($user != $_ENV['ADMIN_USER'] || $pw != $_ENV['ADMIN_PW']) {
-            sleep(2); // brutforce attacks protection
-            self::headers(['WWW-Authenticate' => 'Basic realm="aikido"']);
-            self::error("Nom d'utilisateur ou mot de passe incorrect.", 401);
-        }
-
-        try {
-            $record = Connections::create();
-        } catch (Exception $e) {
-            self::error($e->getMessage(), $e->getCode());
-        }
-
-        self::setCookieToken($record->token);
-        self::send($success, 200);
+    if ($user != $_ENV['ADMIN_USER'] || $pw != $_ENV['ADMIN_PW']) {
+      sleep(2); // prevent brutforce attacks
+      return $res
+        ->withHeader('WWW-Authenticate', 'Basic realm="Dashboard"')
+        ->withStatus(401);
     }
 
-    public function logout()
-    {
-        try {
-            Connections::revoke(self::token());
-        } catch (LoggedOutException $e) {
-        } catch (Exception $e) {
-            self::error($e->getMessage(), $e->getCode());
-        }
-
-        self::headers(['Set-Cookie' => 'token=; Max-Age=0; HttpOnly']);
-        self::send(['message' => 'Déconnexion réussie.'], 205);
+    try {
+      $connection = Connections::create();
+    } catch (Exception $e) {
+      return self::error($res, $e->getMessage(), $e->getCode());
     }
 
-    public static function setCookieToken($token)
-    {
-        $exp = Config::TOKEN_LIFETIME;
-        self::headers(['Set-Cookie' => "token=$token; Max-Age=$exp; HttpOnly"]);
+    $token = $connection->token;
+    $maxAge = Config::TOKEN_LIFETIME;
+
+    return $res
+      ->withHeader('Set-Cookie', "token=$token; Max-Age=$maxAge; HttpOnly; Secure")
+      ->withStatus(200);
+  }
+
+  #[Route('/logout', 'POST')]
+  public function logout(Request $req, Response $res)
+  {
+    try {
+      Connections::revoke(self::extractToken($req));
+    } catch (LoggedOutException $e) {
+    } catch (Exception $e) {
+      self::error($res, $e->getMessage(), $e->getCode());
     }
 
-    public function contact()
-    {
-        $_POST = self::readData();
+    return $res
+      ->withHeader('Set-Cookie', 'token=; Max-Age=0; HttpOnly; Secure')
+      ->withStatus(205);
+  }
 
-        $validData = self::validate($_POST, [
-            'name' => 'required',
-            'email' => 'required|valid_email',
-            'content' => 'required'
-        ], [
-            'name' => 'trim',
-            'email' => 'trim|sanitize_email',
-            'content' => 'trim'
-        ]);
+  #[Route('/contact', 'POST')]
+  public function contact(Request $req, Response $res)
+  {
+    $data = self::readData();
 
-        $this->sendMail($validData);
-    }
+    $v = Utils::validate($data, [
+      'required' => ['name', 'email', 'content'],
+      'email' => ['email']
+    ], [
+      'name' => "Le prénom",
+      'email' => "L'adresse email",
+      'content' => "Le message"
+    ]);
 
-    /* --------------------------------------------------------------------- */
+    if (!$v->validate())
+      return self::badRequest($res, $v->errors());
 
-    public function sendMail($data)
-    {
-        $data['content'] = htmlentities($data['content']);
-        $mail = new PHPMailer();
-        $mail->CharSet = 'UTF-8';
-        $mail->Mailer = $_ENV['MAILER'];
-        $mail->Host = $_ENV['MAIL_HOST'];
-        $mail->Port = $_ENV['MAIL_PORT'];
-        $mail->SMTPAuth = false;
-        $mail->SMTPAutoTLS = false;
-        $mail->setFrom($data['email']);
-        $mail->addAddress('contact@aikido-roncq.fr');
-        $mail->isHTML();
-        $mail->Subject = 'Nouveau message via aikido-roncq.fr';
-        $mail->Body = $this->getView('mail', $data);
+    return self::sendMail($res, $data);
+  }
 
-        if ($mail->send())
-            self::send(['message' => 'Votre message a été envoyé avec succès.']);
-        else
-            self::error('Une erreur est survenue. Merci de réessayer plus tard.', 500);
-    }
+  public static function sendMail(Response $res, array $data)
+  {
+    $data = Utils::filterKeys($data, ['name', 'email', 'content']);
+    $data['content'] = htmlentities($data['content']);
+
+    $mail = new PHPMailer();
+    $mail->CharSet = 'UTF-8';
+    $mail->Mailer = $_ENV['MAILER'];
+    $mail->Host = $_ENV['MAIL_HOST'];
+    $mail->Port = $_ENV['MAIL_PORT'];
+    $mail->SMTPAuth = false;
+    $mail->SMTPAutoTLS = false;
+    $mail->setFrom($data['email']);
+    $mail->addAddress('contact@aikido-roncq.fr');
+    $mail->isHTML();
+    $mail->Subject = 'Nouveau message via aikido-roncq.fr';
+    $mail->Body = self::getView('mail', $data);
+
+    if ($mail->send())
+      return self::send($res, [
+        'message' => 'Votre message a été envoyé avec succès.'
+      ]);
+    else
+      return self::error(
+        $res,
+        'Une erreur est survenue. Merci de réessayer plus tard.',
+        500
+      );
+  }
 }

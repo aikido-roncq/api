@@ -2,110 +2,67 @@
 
 namespace App\Controllers;
 
+use App\App;
 use App\Exceptions\LoggedOutException;
 use App\Models\Connections;
-use App\Utils;
-use Exception;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 
 class Controller
 {
-    private $viewPath;
+  private static function json(Response $res, $data)
+  {
+    $res->getBody()->write(json_encode($data));
+    return $res->withHeader('Content-Type', 'application/json');
+  }
 
-    public function __construct(string $viewPath)
-    {
-        $this->viewPath = $viewPath;
+  protected static function readData()
+  {
+    return json_decode(file_get_contents('php://input'), true);
+  }
+
+  protected static function send(Response $res, $data, int $code = 200)
+  {
+    return self::json($res, $data)
+      ->withStatus($code);
+  }
+
+  protected static function error(Response $res, string $message, int $code)
+  {
+    return self::json($res, compact('message'))
+      ->withStatus($code);
+  }
+
+  protected static function badRequest(Response $res, array $errors)
+  {
+    return self::json($res, $errors)
+      ->withStatus(400);
+  }
+
+  protected static function isLoggedIn(Request $req)
+  {
+    try {
+      return Connections::isValid(self::extractToken($req));
+    } catch (LoggedOutException $e) {
+      return false;
     }
+  }
 
-    private static function answer($data, int $responseCode)
-    {
-        self::headers([
-            'Content-Type' => 'application/json; charset=UTF-8',
-            'Access-Control-Allow-Methods' => 'GET,POST,PUT,PATCH,DELETE,OPTIONS'
-        ]);
+  protected static function extractToken(Request $req)
+  {
+    $cookies = $req->getCookieParams();
 
-        if ($_ENV['APP_ENV'] == 'dev')
-            self::headers([
-                'Access-Control-Allow-Origin' => '*'
-            ]);
+    if (array_key_exists('token', $cookies))
+      return $cookies['token'];
 
-        self::status($responseCode);
+    throw new LoggedOutException();
+  }
 
-        echo json_encode($data);
-
-        die();
-    }
-
-    protected static function send($data = null, int $responseCode = 200)
-    {
-        self::answer($data, $responseCode);
-    }
-
-    protected static function error($message, int $responseCode)
-    {
-        self::answer(compact('message'), $responseCode);
-    }
-
-    protected static function status(int $responseCode)
-    {
-        http_response_code($responseCode);
-    }
-
-    protected static function readData()
-    {
-        return json_decode(file_get_contents('php://input'), true);
-    }
-
-    protected static function headers(array $headers)
-    {
-        foreach ($headers as $key => $value)
-            self::addHeader("$key:$value");
-    }
-
-    private static function addHeader(string $header)
-    {
-        header($header, false);
-    }
-
-    protected static function validate(array $data, array $rules, array $filters = [])
-    {
-        try {
-            return Utils::validate($data, $rules, $filters);
-        } catch (Exception $e) {
-            self::error($e->getMessage(), $e->getCode());
-        }
-    }
-
-    protected static function isLoggedIn()
-    {
-        try {
-            return Connections::isValid(self::token());
-        } catch (LoggedOutException $e) {
-            return false;
-        }
-    }
-
-    protected static function token()
-    {
-        if (empty($_COOKIE['token']))
-            throw new LoggedOutException();
-
-        return $_COOKIE['token'];
-    }
-
-    protected function watchdog()
-    {
-        try {
-            return self::token();
-        } catch (Exception $e) {
-            self::error($e->getMessage(), $e->getCode());
-        }
-    }
-
-    protected function getView($view, $args)
-    {
-        extract($args);
-        ob_start();
-        require "{$this->viewPath}/$view.php";
-        return ob_get_clean();
-    }
+  protected static function getView(string $view, array $args)
+  {
+    extract($args);
+    ob_start();
+    require sprintf('%s/%s.php', App::VIEWS_PATH, $view);
+    return ob_get_clean();
+  }
 }

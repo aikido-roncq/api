@@ -85,10 +85,13 @@ class UsersController extends Controller
     if (!$v->validate())
       return self::badRequest($res, $v->errors());
 
-    return self::sendMail($res, $data);
+    if (self::sendMail($data))
+      return self::send($res, ['message' => 'Votre message a été envoyé avec succès.']);
+
+    return self::error($res, 'Une erreur est survenue. Merci de réessayer plus tard.', 500);
   }
 
-  public static function sendMail(Response $res, array $data)
+  public static function sendMail(array $data)
   {
     $data = Utils::filterKeys($data, ['name', 'email', 'content']);
     $data['content'] = htmlentities($data['content']);
@@ -106,15 +109,6 @@ class UsersController extends Controller
     $mail->Subject = 'Nouveau message via aikido-roncq.fr';
     $mail->Body = self::getView('mail', $data);
 
-    if ($mail->send())
-      return self::send($res, [
-        'message' => 'Votre message a été envoyé avec succès.'
-      ]);
-    else
-      return self::error(
-        $res,
-        'Une erreur est survenue. Merci de réessayer plus tard.',
-        500
-      );
+    return $mail->send();
   }
 }

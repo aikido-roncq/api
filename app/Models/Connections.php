@@ -19,10 +19,6 @@ class Connections extends Model
 
   protected static array $labels = [];
 
-  protected static array $keys = [
-    'token', 'iat', 'exp'
-  ];
-
   public static function make(array $fields = [])
   {
     $fields = [

@@ -14,11 +14,10 @@ abstract class Model
   protected static string $pk;
   protected static array $rules;
   protected static array $labels;
-  protected static array $keys;
 
   public function __construct(array $fields = [])
   {
-    $allowedKeys = Utils::filterKeys($fields, static::$keys);
+    $allowedKeys = Utils::filterKeys($fields, static::$rules['required']);
     $valitron = Utils::validate($allowedKeys, static::$rules, static::$labels);
 
     if (!$valitron->validate())

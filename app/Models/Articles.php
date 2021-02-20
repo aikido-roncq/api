@@ -10,7 +10,7 @@ class Articles extends Model
 
   protected static array $rules = [
     'required' => [
-      'title', 'slug', 'content'
+      'date', 'slug', 'title', 'content'
     ],
     'lengthBetween' => [
       ['title', 5, 50]
@@ -25,14 +25,12 @@ class Articles extends Model
     'content' => 'Le contenu'
   ];
 
-  protected static array $keys = [
-    'title', 'slug', 'content'
-  ];
-
   protected static function make(array $fields = [])
   {
     if (array_key_exists('title', $fields))
       $fields['slug'] = self::slugify($fields['title']);
+
+    $fields['date'] = date('Y-m-d');
 
     return new self($fields);
   }

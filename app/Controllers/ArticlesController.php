@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Articles;
 use App\Attributes\Route;
 use App\Exceptions\LoggedOutException;
+use App\Exceptions\ValidationException;
 use App\Utils;
 use Exception;
 use Slim\Psr7\Request;
@@ -41,6 +42,8 @@ class ArticlesController extends Controller
 
     try {
       $article = Articles::create($data);
+    } catch (ValidationException $e) {
+      return self::badRequest($res, $e->getErrors());
     } catch (Exception $e) {
       return self::error($res, $e);
     }
@@ -57,7 +60,7 @@ class ArticlesController extends Controller
     try {
       $article = Articles::delete($args['slug']);
     } catch (Exception $e) {
-      self::error($res, $e);
+      return self::error($res, $e);
     }
 
     return self::send($res, $article);
@@ -75,8 +78,10 @@ class ArticlesController extends Controller
 
     try {
       $article = Articles::update($args['slug'], array_filter($data));
+    } catch (ValidationException $e) {
+      return self::badRequest($res, $e->getErrors());
     } catch (Exception $e) {
-      self::error($res, $e);
+      return self::error($res, $e);
     }
 
     return self::send($res, $article);

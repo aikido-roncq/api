@@ -13,15 +13,15 @@
 
 <body style="font-family: sans-serif">
 
-    <p><strong>De:</strong> <?= $name ?></p>
+  <p><strong>De:</strong> <?= $name ?></p>
 
-    <p><?= $content ?></p>
+  <p><?= $content ?></p>
 
-    <br>
+  <br>
 
-    <a href="mailto:<?= $email ?>" style="color: white; text-decoration: none; padding: .6em 1em; border-radius: .2em; background:red">
-        Répondre
-    </a>
+  <a href="mailto:<?= $email ?>" style="color: white; text-decoration: none; padding: .6em 1em; border-radius: .2em; background:red">
+    Répondre
+  </a>
 </body>
 
 </html>

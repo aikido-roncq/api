@@ -38,12 +38,9 @@ class ArticlesController extends Controller
     return self::send($res, $article);
   }
 
-  #[Route('[/]', 'POST')]
+  #[Route('[/]', 'POST', admin: true)]
   public function add(Request $req, Response $res)
   {
-    if (!self::isLoggedIn($req))
-      return self::error($res, new LoggedOutException());
-
     $data = self::readData();
 
     try {
@@ -57,12 +54,9 @@ class ArticlesController extends Controller
     return self::send($res, $article, 201);
   }
 
-  #[Route('/{slug}', 'PATCH')]
+  #[Route('/{slug}', 'PATCH', admin: true)]
   public function edit(Request $req, Response $res, array $args)
   {
-    if (!self::isLoggedIn($req))
-      return self::error($res, new LoggedOutException());
-
     $data = self::readData();
 
     $data = Utils::filterKeys($data, ['title', 'content']);
@@ -78,12 +72,9 @@ class ArticlesController extends Controller
     return self::send($res, $article);
   }
 
-  #[Route('/{slug}', 'DELETE')]
+  #[Route('/{slug}', 'DELETE', admin: true)]
   public function delete(Request $req, Response $res, array $args)
   {
-    if (!self::isLoggedIn($req))
-      return self::error($res, new LoggedOutException());
-
     try {
       $article = Articles::delete($args['slug']);
     } catch (Exception $e) {

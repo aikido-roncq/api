@@ -37,12 +37,9 @@ class EventsController extends Controller
     return self::send($res, $event);
   }
 
-  #[Route('[/]', 'POST')]
+  #[Route('[/]', 'POST', admin: true)]
   public function add(Request $req, Response $res)
   {
-    if (!self::isLoggedIn($req))
-      return self::error($res, new LoggedOutException());
-
     $data = self::readData();
 
     try {
@@ -56,12 +53,9 @@ class EventsController extends Controller
     return self::send($res, $event, 201);
   }
 
-  #[Route('/{id}', 'PATCH')]
+  #[Route('/{id}', 'PATCH', admin: true)]
   public function edit(Request $req, Response $res, array $args)
   {
-    if (!self::isLoggedIn($req))
-      return self::error($res, new LoggedOutException());
-
     $data = self::readData();
 
     try {
@@ -73,12 +67,9 @@ class EventsController extends Controller
     return self::send($res, $event);
   }
 
-  #[Route('/{id}', 'DELETE')]
+  #[Route('/{id}', 'DELETE', admin: true)]
   public function delete(Request $req, Response $res, array $args)
   {
-    if (!self::isLoggedIn($req))
-      return self::error($res, new LoggedOutException());
-
     try {
       $event = Events::delete($args['id']);
     } catch (Exception $e) {

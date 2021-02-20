@@ -9,11 +9,13 @@ class Route
 {
   private string $path;
   private string $method;
+  private bool $admin;
 
-  public function __construct(string $path, string $method = '')
+  public function __construct(string $path, string $method = '', bool $admin = false)
   {
     $this->path = $path;
     $this->method = $method;
+    $this->admin = $admin;
   }
 
   public function getPath()
@@ -24,5 +26,10 @@ class Route
   public function getMethod()
   {
     return $this->method;
+  }
+
+  public function isAdmin()
+  {
+    return $this->admin;
   }
 }

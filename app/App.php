@@ -8,6 +8,7 @@ use App\Controllers\CorsController;
 use App\Controllers\EventsController;
 use App\Controllers\GalleryController;
 use App\Controllers\UsersController;
+use App\Middlewares\AuthMiddleware;
 use App\Middlewares\JsonMiddleware;
 use Slim\Factory\AppFactory as SlimAppFactory;
 use Valitron\Validator;
@@ -64,7 +65,10 @@ class App
         $route = $attribute->newInstance();
         [$httpMethod, $path] = [$route->getMethod(), $route->getPath()];
         $handler = [new $controller(), $method->getName()];
-        $app->map([$httpMethod], $prefix . $path, $handler);
+        $mapped = $app->map([$httpMethod], $prefix . $path, $handler);
+
+        if ($route->isAdmin())
+          $mapped->add(AuthMiddleware::class);
       }
     }
   }

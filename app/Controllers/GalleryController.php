@@ -33,12 +33,10 @@ class GalleryController extends Controller
     return self::send($res, $gallery);
   }
 
-  #[Route('[/]', 'POST')]
+  #[Route('[/]', 'POST', admin: true)]
   public function add(Request $req, Response $res)
   {
-    if (!self::isLoggedIn($req))
-      return self::error($res, new LoggedOutException());
-    elseif (!array_key_exists('image', $_FILES))
+    if (!array_key_exists('image', $_FILES))
       return self::badRequest($res, ['image' => 'Image non reçue.']);
 
     $data = ['caption' => $_POST['caption'] ?? null];

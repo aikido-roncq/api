@@ -9,6 +9,10 @@ class Connections extends Model
 {
   protected static string $pk = 'token';
 
+  protected static array $keys = [
+    'token', 'iat', 'exp'
+  ];
+
   protected static array $rules = [
     'required' => ['token', 'iat', 'exp'],
     'dateFormat' => [

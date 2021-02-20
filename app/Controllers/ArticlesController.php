@@ -17,7 +17,13 @@ class ArticlesController extends Controller
   #[Route('[/]', 'GET')]
   public function all(Request $req, Response $res)
   {
-    return self::send($res, Articles::orderBy('date', 'desc'));
+    try {
+      $articles = Articles::orderBy('date', 'desc');
+    } catch (Exception $e) {
+      return self::error($res, $e);
+    }
+
+    return self::send($res, $articles);
   }
 
   #[Route('/{slug}', 'GET')]

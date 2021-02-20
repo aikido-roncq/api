@@ -7,9 +7,9 @@ use App\Config;
 
 class Connections extends Model
 {
-  protected static $pk = 'token';
+  protected static string $pk = 'token';
 
-  protected static $rules = [
+  protected static array $rules = [
     'required' => ['token', 'iat', 'exp'],
     'dateFormat' => [
       ['iat', 'Y-m-d H:i:s'],
@@ -17,13 +17,20 @@ class Connections extends Model
     ]
   ];
 
-  protected static $labels = [];
+  protected static array $labels = [];
+
+  protected static array $keys = [
+    'token', 'iat', 'exp'
+  ];
 
   public static function make(array $fields = [])
   {
-    $fields['token'] = bin2hex(random_bytes(16));
-    $fields['iat'] = date('Y-m-d H:i:s');
-    $fields['exp'] = date('Y-m-d H:i:s', time() + Config::TOKEN_LIFETIME);
+    $fields = [
+      'token' => bin2hex(random_bytes(16)),
+      'iat' => date('Y-m-d H:i:s'),
+      'exp' => date('Y-m-d H:i:s', time() + Config::TOKEN_LIFETIME),
+    ];
+
     return new static($fields);
   }
 

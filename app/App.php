@@ -8,6 +8,7 @@ use App\Controllers\CorsController;
 use App\Controllers\EventsController;
 use App\Controllers\GalleryController;
 use App\Controllers\UsersController;
+use App\Middlewares\JsonMiddleware;
 use Slim\Factory\AppFactory as SlimAppFactory;
 use Valitron\Validator;
 use Slim\App as SlimApp;
@@ -33,7 +34,10 @@ class App
     Dotenv::createImmutable(ROOT)->load();
     Validator::lang('fr');
     $app = SlimAppFactory::create();
-    self::registerControllers($app);
+
+    $app->add(JsonMiddleware::class);
+    $this->registerControllers($app);
+
     $app->run();
   }
 

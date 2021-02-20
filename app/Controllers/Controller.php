@@ -14,7 +14,7 @@ class Controller
   private static function json(Response $res, $data)
   {
     $res->getBody()->write(json_encode($data));
-    return $res->withHeader('Content-Type', 'application/json');
+    return $res;
   }
 
   protected static function readData()

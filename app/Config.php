@@ -6,19 +6,17 @@ use PDO;
 
 class Config
 {
-  const TOKEN_LIFETIME = 3600 * 24 * 7; // 1 week
+  public const TOKEN_LIFETIME = 3600 * 24 * 7; // 1 week
 
-  const PDO_OPTIONS = [
+  private const PDO_DEFAULT_OPTIONS = [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
   ];
 
-  public static function optsPDO()
+  public static function PDOopts()
   {
-    $opts = self::PDO_OPTIONS;
+    if ($_ENV['APP_ENV'] === 'dev')
+      return self::PDO_DEFAULT_OPTIONS + [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
 
-    if ($_ENV['APP_ENV'] != 'prod')
-      $opts[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
-
-    return $opts;
+    return self::PDO_DEFAULT_OPTIONS;
   }
 }

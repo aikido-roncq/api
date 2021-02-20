@@ -18,6 +18,9 @@ class Articles extends Model
     'lengthMin' => [
       ['content', 10]
     ],
+    'dateFormat' => [
+      ['date', 'Y-m-d']
+    ]
   ];
 
   protected static array $labels = [

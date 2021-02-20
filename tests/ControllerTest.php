@@ -34,7 +34,6 @@ abstract class ControllerTest extends TestCase
       'base_uri' => self::HOST,
       'cookies' => true,
       'timeout' => 5,
-      'debug' => true
     ]);
   }
 

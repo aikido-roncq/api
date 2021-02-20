@@ -10,6 +10,10 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 Dotenv::createImmutable('.')->load();
 
+const N_ARTICLES = 10;
+const N_EVENTS = 10;
+const N_IMAGES = 10;
+
 $faker = FakerFactory::create();
 $builder = new QueryBuilder(Factory::pdo());
 $slugify = new Slugify();
@@ -17,9 +21,10 @@ $slugify = new Slugify();
 $builder->deleteFrom('articles')->execute();
 $builder->deleteFrom('events')->execute();
 $builder->deleteFrom('gallery')->execute();
+$builder->deleteFrom('connections')->execute();
 
 // INSERT ARTICLES
-for ($i = 0; $i < 10; $i++) {
+for ($i = 0; $i < N_ARTICLES; $i++) {
   $title = $faker->words(4, true);
   $slug = $slugify->slugify($title);
   $content = "<p>{$faker->paragraphs(3, true)}</p>";
@@ -32,7 +37,7 @@ for ($i = 0; $i < 10; $i++) {
 }
 
 // INSERT EVENTS
-for ($i = 0; $i < 10; $i++) {
+for ($i = 0; $i < N_EVENTS; $i++) {
   $title = $faker->words(4, true);
   $info = mb_substr($faker->paragraphs(1, true), 0, 250);
   $start_date = $faker->dateTimeBetween('-10 days', '+1 month')->format('Y-m-d');
@@ -49,10 +54,10 @@ for ($i = 0; $i < 10; $i++) {
 }
 
 // INSERT IMAGES
-for ($i = 0; $i < 10; $i++) {
-  $src = sprintf('assets/gallery/%s.jpg', $faker->word());
-  $caption = $i < 4 ? null : $faker->sentence();
-  $added = $faker->dateTimeBetween('-15 days', 'today')->format('Y-m-d');
+for ($i = 0; $i < N_IMAGES; $i++) {
+  $src = "assets/gallery/{$faker->word()}.jpg";
+  $caption = $i < 4 ? $faker->sentence() : null;
+  $added = $faker->dateTimeBetween('-15 days', 'today')->format('Y-m-d H:i:s');
 
   $builder
     ->insertInto('gallery')

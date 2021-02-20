@@ -12,18 +12,19 @@ use App\Utils;
 abstract class Model
 {
   protected static string $pk;
+  protected static array $keys;
   protected static array $rules;
   protected static array $labels;
 
   public function __construct(array $fields = [])
   {
-    $allowedKeys = Utils::filterKeys($fields, static::$rules['required']);
-    $valitron = Utils::validate($allowedKeys, static::$rules, static::$labels);
+    $allowedFields = Utils::filterKeys($fields, static::$keys);
+    $valitron = Utils::validate($allowedFields, static::$rules, static::$labels);
 
     if (!$valitron->validate())
       throw new ValidationException($valitron->errors());
 
-    foreach ($allowedKeys as $key => $value)
+    foreach ($allowedFields as $key => $value)
       $this->$key = $value;
   }
 

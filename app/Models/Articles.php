@@ -8,6 +8,10 @@ class Articles extends Model
 {
   protected static string $pk = 'slug';
 
+  protected static array $keys = [
+    'date', 'slug', 'title', 'content'
+  ];
+
   protected static array $rules = [
     'required' => [
       'date', 'slug', 'title', 'content'

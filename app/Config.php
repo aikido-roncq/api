@@ -14,9 +14,14 @@ class Config
 
   public static function PDOopts()
   {
-    if ($_ENV['APP_ENV'] === 'dev')
+    if (self::ENV_IS_DEV())
       return self::PDO_DEFAULT_OPTIONS + [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
 
     return self::PDO_DEFAULT_OPTIONS;
+  }
+
+  public static function ENV_IS_DEV()
+  {
+    return $_ENV['APP_ENV'] === 'dev';
   }
 }

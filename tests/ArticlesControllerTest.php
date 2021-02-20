@@ -48,7 +48,7 @@ class ArticlesControllerTest extends ControllerTest
   public function testFindBySlug()
   {
     $firstSlug = $this->first();
-    [$code, $body] = $this->get(self::BASE_URI . "/$firstSlug");
+    [$code, $body] = $this->get(self::BASE_URI . '/' . $firstSlug);
     $this->assertEquals(200, $code);
     $this->assertIsArray($body);
     $this->verifyKeys($body);

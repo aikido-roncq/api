@@ -8,9 +8,11 @@ use Slim\Psr7\Response;
 
 class CorsController extends Controller
 {
-  #[Route('/[*]', 'OPTIONS')]
+  #[Route('/{route:.*}', 'OPTIONS')]
   public function preflight(Request $req, Response $res)
   {
-    return $res->withStatus(200);
+    return $res
+      ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+      ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   }
 }

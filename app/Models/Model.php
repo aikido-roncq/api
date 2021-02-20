@@ -14,15 +14,17 @@ abstract class Model
   protected static string $pk;
   protected static array $rules;
   protected static array $labels;
+  protected static array $keys;
 
   public function __construct(array $fields = [])
   {
-    $v = Utils::validate($fields, static::$rules, static::$labels);
+    $allowedKeys = Utils::filterKeys($fields, static::$keys);
+    $valitron = Utils::validate($allowedKeys, static::$rules, static::$labels);
 
-    if (!$v->validate())
-      throw new ValidationException($v->errors());
+    if (!$valitron->validate())
+      throw new ValidationException($valitron->errors());
 
-    foreach ($fields as $key => $value)
+    foreach ($allowedKeys as $key => $value)
       $this->$key = $value;
   }
 

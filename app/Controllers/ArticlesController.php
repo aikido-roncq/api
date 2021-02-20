@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Models\Articles;
 use App\Attributes\Route;
-use App\Exceptions\LoggedOutException;
 use App\Exceptions\ValidationException;
 use App\Utils;
 use Exception;

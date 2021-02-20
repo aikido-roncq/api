@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Attributes\Route;
-use App\Exceptions\LoggedOutException;
 use App\Exceptions\ValidationException;
 use App\Models\Events;
 use Exception;

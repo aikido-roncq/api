@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Attributes\Route;
-use App\Exceptions\LoggedOutException;
 use App\Exceptions\UnknownException;
 use App\Exceptions\ValidationException;
 use App\Models\Gallery;

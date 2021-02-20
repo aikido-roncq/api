@@ -7,6 +7,7 @@ use Exception;
 class ValidationException extends Exception
 {
   private array $errors = [];
+  protected $code = 400;
 
   public function __construct(array $errors)
   {

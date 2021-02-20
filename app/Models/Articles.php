@@ -2,19 +2,16 @@
 
 namespace App\Models;
 
-use App\Exceptions\ValidationException;
-use App\Utils;
 use Cocur\Slugify\Slugify;
-use InvalidArgumentException;
 
 class Articles extends Model
 {
     protected static string $pk = 'slug';
 
     protected static array $rules = [
-        'required' => ['slug', 'title', 'content'],
-        'lengthBetween' => ['title', 3, 50],
-        'lengthMin' => ['content', 3],
+        'required' => ['title', 'slug', 'content'],
+        'lengthBetween' => ['title', 5, 50],
+        'lengthMin' => ['content', 10],
     ];
 
     protected static array $labels = [
@@ -22,28 +19,30 @@ class Articles extends Model
         'content' => 'Le contenu'
     ];
 
+    protected static array $keys = [
+        'title', 'slug', 'content'
+    ];
+
     protected static function make(array $fields = [])
     {
         if (array_key_exists('title', $fields))
             $fields['slug'] = self::slugify($fields['title']);
 
-        $validData = Utils::filterKeys($fields, ['slug', 'title', 'content']);
-
-        return new self($validData);
+        return new self($fields);
     }
 
-    public static function update(string $key, array $new_fields)
+    public static function update(string $key, array $fields)
     {
-        if (array_key_exists('title', $new_fields))
-            $new_fields['slug'] = self::slugify($new_fields['title']);
+        if (array_key_exists('title', $fields))
+            $fields['slug'] = self::slugify($fields['title']);
 
-        return parent::update($key, $new_fields);
+        return parent::update($key, $fields);
     }
 
     private static function slugify(string $title)
     {
         $slug = (new Slugify)->slugify($title);
         $token = bin2hex(random_bytes(2));
-        return  "$slug-$token";
+        return  sprintf('%s-%s', $slug, $token);
     }
 }

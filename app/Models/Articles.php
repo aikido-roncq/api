@@ -9,9 +9,15 @@ class Articles extends Model
   protected static string $pk = 'slug';
 
   protected static array $rules = [
-    'required' => ['title', 'slug', 'content'],
-    'lengthBetween' => ['title', 5, 50],
-    'lengthMin' => ['content', 10],
+    'required' => [
+      'title', 'slug', 'content'
+    ],
+    'lengthBetween' => [
+      ['title', 5, 50]
+    ],
+    'lengthMin' => [
+      ['content', 10]
+    ],
   ];
 
   protected static array $labels = [

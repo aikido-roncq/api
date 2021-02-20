@@ -2,11 +2,16 @@
 
 namespace App\Controllers;
 
+use App\Attributes\Route;
+use App\Exceptions\LoggedOutException;
 use App\Exceptions\UnknownException;
+use App\Exceptions\ValidationException;
 use App\Models\Gallery;
 use Exception;
-use InvalidArgumentException;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 
+#[Route('/gallery')]
 class GalleryController extends Controller
 {
   private const ALLOWED_EXT = [
@@ -16,47 +21,52 @@ class GalleryController extends Controller
     'gif' => 'imagegif'
   ];
 
-  public function all()
+  #[Route('[/]', 'GET')]
+  public function all(Request $req, Response $res)
   {
     try {
-      self::send(Gallery::orderBy('added'));
+      $gallery = Gallery::orderBy('added');
     } catch (Exception $e) {
-      self::error($e->getMessage(), $e->getCode());
+      return self::error($res, $e);
     }
+
+    return self::send($res, $gallery);
   }
 
-  public function add()
+  #[Route('[/]', 'POST')]
+  public function add(Request $req, Response $res)
   {
-    $this->watchdog();
+    if (!self::isLoggedIn($req))
+      return self::error($res, new LoggedOutException());
+    elseif (!array_key_exists('image', $_FILES))
+      return self::badRequest($res, ['image' => 'Image non reçue.']);
 
-    $_POST = self::readData();
-
-    $validData = self::validate($_POST + $_FILES, [
-      'caption' => 'optional',
-      'image' => 'required_file'
-    ]);
+    $data = ['caption' => $_POST['caption'] ?? null];
 
     try {
-      $validData['src'] = self::upload($validData['image']);
-      self::send(Gallery::create($validData), 201);
+      $src = self::upload($_FILES['image']);
+      $image = Gallery::create(array_merge($data, compact('src')));
+    } catch (ValidationException $e) {
+      return self::badRequest($res, $e->getErrors());
     } catch (Exception $e) {
-      self::error($e->getMessage(), $e->getCode());
+      return self::error($res, $e);
     }
+
+    return self::send($res, $image, 201);
   }
 
-  /* --------------------------------------------------------------------- */
   private static function upload(array $file): string
   {
     $filename = bin2hex(random_bytes(4));
     [$type, $ext] = explode('/', $file['type']);
 
     if ($type != 'image')
-      throw new InvalidArgumentException('Type de fichier invalide', 400);
+      throw new ValidationException(['image' => 'Type de fichier invalide.']);
     elseif (!in_array($ext, array_keys(self::ALLOWED_EXT)))
-      throw new InvalidArgumentException('Extension non supportée', 400);
+      throw new ValidationException(['image' => 'Extension non supportée.']);
 
-    $publicPath = sprintf('assets/gallery/%s.%s', $filename, $ext);
-    $realPath = sprintf('%s/public/%s', ROOT, $publicPath);
+    $publicPath = sprintf('/assets/gallery/%s.%s', $filename, $ext);
+    $realPath = ROOT . '/public' . $publicPath;
 
     if (!self::resizeImage($file['tmp_name'], $ext))
       throw new UnknownException();

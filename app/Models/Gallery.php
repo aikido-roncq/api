@@ -4,21 +4,29 @@ namespace App\Models;
 
 class Gallery extends Model
 {
-  protected static $pk = 'src';
+  protected static string $pk = 'src';
 
-  protected static $rules = [
-    'src' => 'required',
-    'caption' => 'optional'
+  protected static array $keys = [
+    'src', 'caption', 'added'
   ];
 
-  protected static $filters = [
-    'src' => 'trim',
-    'caption' => 'trim'
+  protected static array $rules = [
+    'required' => ['src'],
+    'optional' => ['caption'],
+    'lengthBetween' => [
+      ['caption', 5, 250]
+    ],
+    'dateFormat' => [
+      ['added', 'Y-m-d H:i:s']
+    ]
   ];
 
-  public static function make(array $fields = [])
+  protected static array $labels = [
+    'caption' => 'La légende'
+  ];
+
+  public static function make(array $data = [])
   {
-    $validData = self::validate($fields, self::$rules, self::$filters);
-    return new self($validData);
+    return new self($data);
   }
 }

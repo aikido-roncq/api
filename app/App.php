@@ -59,12 +59,8 @@ class App
       foreach ($attributes as $attribute) {
         $route = $attribute->newInstance();
         [$httpMethod, $path] = [$route->getMethod(), $route->getPath()];
-
-        $app->map(
-          [$httpMethod],
-          $prefix . $path,
-          [new $controller(), $method->getName()]
-        );
+        $handler = [new $controller(), $method->getName()];
+        $app->map([$httpMethod], $prefix . $path, $handler);
       }
     }
   }

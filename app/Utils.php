@@ -22,4 +22,13 @@ abstract class Utils
       return in_array($key, $allowedKeys);
     }, ARRAY_FILTER_USE_KEY);
   }
+
+  public static function allKeysExist(array $keys, array $arr)
+  {
+    foreach ($keys as $key)
+      if (!array_key_exists($key, $arr))
+        return false;
+
+    return true;
+  }
 }

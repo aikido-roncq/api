@@ -2,79 +2,89 @@
 
 namespace App\Controllers;
 
+use App\Attributes\Route;
+use App\Exceptions\LoggedOutException;
+use App\Exceptions\ValidationException;
 use App\Models\Events;
 use Exception;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 
+#[Route('/events')]
 class EventsController extends Controller
 {
-  public function all()
+  #[Route('[/]', 'GET')]
+  public function all(Request $req, Response $res)
   {
     try {
       $events = Events::orderBy('start_date');
     } catch (Exception $e) {
-      self::error($e->getMessage(), $e->getCode());
+      return self::error($res, $e);
     }
 
-    self::send($events);
+    return self::send($res, $events);
   }
 
-  public function find(int $id)
+  #[Route('/{id}', 'GET')]
+  public function find(Request $req, Response $res, array $args)
   {
     try {
-      self::send(Events::find($id));
+      $event = Events::find($args['id']);
     } catch (Exception $e) {
-      self::error($e->getMessage(), $e->getCode());
+      return self::error($res, $e);
     }
+
+    return self::send($res, $event);
   }
 
-  public function delete(int $id)
+  #[Route('[/]', 'POST')]
+  public function add(Request $req, Response $res)
   {
-    $this->watchdog();
+    if (!self::isLoggedIn($req))
+      return self::error($res, new LoggedOutException());
+
+    $data = self::readData();
 
     try {
-      self::send(Events::delete($id));
+      $event = Events::create($data);
+    } catch (ValidationException $e) {
+      return self::badRequest($res, $e->getErrors());
     } catch (Exception $e) {
-      self::error($e->getMessage(), $e->getCode());
+      return self::error($res, $e);
     }
+
+    return self::send($res, $event, 201);
   }
 
-  public function add()
+  #[Route('/{id}', 'PATCH')]
+  public function edit(Request $req, Response $res, array $args)
   {
-    $this->watchdog();
+    if (!self::isLoggedIn($req))
+      return self::error($res, new LoggedOutException());
 
-    $_POST = self::readData();
-
-    $validData = self::validate($_POST, [
-      'title' => 'required',
-      'info' => 'required',
-      'start_date' => 'required',
-      'end_date' => 'required'
-    ]);
+    $data = self::readData();
 
     try {
-      self::send(Events::create($validData), 201);
+      $event = Events::update($args['id'], $data);
     } catch (Exception $e) {
-      self::error($e->getMessage(), $e->getCode());
+      return self::error($res, $e);
     }
+
+    return self::send($res, $event);
   }
 
-  public function edit(int $id)
+  #[Route('/{id}', 'DELETE')]
+  public function delete(Request $req, Response $res, array $args)
   {
-    $this->watchdog();
-
-    $_PATCH = self::readData();
-
-    $validData = self::validate($_PATCH, [
-      'title' => 'optional',
-      'info' => 'optional',
-      'start_date' => 'optional',
-      'end_date' => 'optional'
-    ]);
+    if (!self::isLoggedIn($req))
+      return self::error($res, new LoggedOutException());
 
     try {
-      self::send(Events::update($id, $validData));
+      $event = Events::delete($args['id']);
     } catch (Exception $e) {
-      self::error($e->getMessage(), $e->getCode());
+      return self::error($res, $e);
     }
+
+    return self::send($res, $event);
   }
 }

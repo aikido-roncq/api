@@ -2,40 +2,44 @@
 
 namespace App\Models;
 
-use InvalidArgumentException;
+use App\Exceptions\ValidationException;
+use App\Utils;
 
 class Events extends Model
 {
-  protected static $pk = 'id';
+  protected static string $pk = 'id';
 
-  protected static $rules = [
-    'title' => 'required|max_len,50',
-    'info' => 'required|max_len,250',
-    'start_date' => 'required|date',
-    'end_date' => 'required|date',
+  protected static array $keys = [
+    'id', 'title', 'info', 'start_date', 'end_date'
   ];
 
-  protected static $filters = [
-    'title' => 'trim|sanitize_string',
-    'info' => 'trim|sanitize_string',
+  protected static array $rules = [
+    'required' => ['title', 'info', 'start_date', 'end_date'],
+    'dateFormat' => [
+      ['start_date', 'Y-m-d'],
+      ['end_date', 'Y-m-d'],
+    ],
+    'lengthBetween' => [
+      ['title', 3, 50],
+      ['info', 5, 250],
+    ],
   ];
 
-  public static function make($fields = [])
+  protected static array $labels = [
+    'title' => 'Le titre',
+    'info' => 'Le champ informations',
+    'start_date' => 'La date de début',
+    'end_date' => 'La date de fin',
+  ];
+
+  public static function make(array $data = [])
   {
-    $validData = self::validate($fields, self::$rules, self::$filters);
+    if (Utils::allKeysExist(['start_date', 'end_date'], $data))
+      if ($data['start_date'] > $data['end_date'])
+        throw new ValidationException([
+          'end_date' => 'La date de fin ne peut pas être avant celle de début'
+        ]);
 
-    if ($validData['start_date'] > $validData['end_date'])
-      throw new InvalidArgumentException('Start date must be before end date', 400);
-
-    return new self($validData);
-  }
-
-  /* --------------------------------------------------------------------- */
-
-  public static function orderBy(string $key = null, string $order = 'asc', array $conditions = [])
-  {
-    return parent::orderBy($key, $order, [
-      sprintf('end_date >= "%s"', date('Y-m-d'))
-    ]);
+    return new self($data);
   }
 }

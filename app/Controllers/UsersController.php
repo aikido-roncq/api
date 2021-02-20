@@ -54,11 +54,10 @@ class UsersController extends Controller
       return self::error($res, $e);
     }
 
-    $token = $connection->token;
-    $maxAge = Config::TOKEN_LIFETIME;
+    $cookie = self::tokenToCookie($connection->token);
 
     return $res
-      ->withHeader('Set-Cookie', "token=$token; Max-Age=$maxAge; HttpOnly; Secure")
+      ->withHeader('Set-Cookie', $cookie)
       ->withStatus(200);
   }
 
@@ -72,9 +71,25 @@ class UsersController extends Controller
       self::error($res, $e);
     }
 
+    $cookie = self::tokenToCookie();
+
     return $res
-      ->withHeader('Set-Cookie', 'token=; Max-Age=0; HttpOnly; Secure')
+      ->withHeader('Set-Cookie', $cookie)
       ->withStatus(205);
+  }
+
+  private static function tokenToCookie(string $token = '')
+  {
+    $maxAge = Config::TOKEN_LIFETIME;
+    $https = 'Secure';
+
+    if (empty($token))
+      $maxAge = 0;
+
+    if (Config::ENV_IS_DEV())
+      $https = '';
+
+    return "token=$token; Max-Age=$maxAge; HttpOnly; $https";
   }
 
   #[Route('/contact', 'POST')]

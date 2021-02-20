@@ -45,6 +45,6 @@ class Connections extends Model
       return false;
     }
 
-    return $record->exp < date('Y-m-d H:i:s');
+    return date('Y-m-d H:i:s') < $record->exp;
   }
 }

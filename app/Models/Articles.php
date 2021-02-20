@@ -6,6 +6,8 @@ use Cocur\Slugify\Slugify;
 
 class Articles extends Model
 {
+  private const DATE_FORMAT = 'Y-m-d H:i:s';
+
   protected static string $pk = 'slug';
 
   protected static array $keys = [
@@ -23,7 +25,7 @@ class Articles extends Model
       ['content', 10]
     ],
     'dateFormat' => [
-      ['date', 'Y-m-d']
+      ['date', self::DATE_FORMAT]
     ]
   ];
 
@@ -37,7 +39,7 @@ class Articles extends Model
     if (array_key_exists('title', $fields))
       $fields['slug'] = self::slugify($fields['title']);
 
-    $fields['date'] = date('Y-m-d');
+    $fields['date'] = date(self::DATE_FORMAT);
 
     return new self($fields);
   }

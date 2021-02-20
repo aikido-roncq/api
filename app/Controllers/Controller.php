@@ -43,10 +43,12 @@ class Controller
   protected static function isLoggedIn(Request $req)
   {
     try {
-      return Connections::isValid(self::extractToken($req));
+      $token = self::extractToken($req);
     } catch (LoggedOutException $e) {
       return false;
     }
+
+    return Connections::isValid($token);
   }
 
   protected static function extractToken(Request $req)

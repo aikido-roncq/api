@@ -21,17 +21,25 @@ class UsersController extends Controller
     if (self::isLoggedIn($req))
       return $res->withStatus(200);
 
-    $v = Utils::validate($_SERVER, [
-      'required' => ['PHP_AUTH_USER', 'PHP_AUTH_PW']
+    $credentials = [];
+
+    if (array_key_exists('PHP_AUTH_USER', $_SERVER))
+      $credentials['login'] = $_SERVER['PHP_AUTH_USER'];
+
+    if (array_key_exists('PHP_AUTH_PW', $_SERVER))
+      $credentials['password'] = $_SERVER['PHP_AUTH_PW'];
+
+    $v = Utils::validate($credentials, [
+      'required' => ['login', 'password']
     ], [
-      'PHP_AUTH_USER' => 'Le login',
-      'PHP_AUTH_PW' => 'Le mot de passe'
+      'login' => 'Le login',
+      'password' => 'Le mot de passe'
     ]);
 
     if (!$v->validate())
       return self::badRequest($res, $v->errors());
 
-    [$user, $pw] = [$_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']];
+    [$user, $pw] = [$credentials['login'], $credentials['password']];
 
     if ($user != $_ENV['ADMIN_USER'] || $pw != $_ENV['ADMIN_PW']) {
       sleep(2); // prevent brutforce attacks

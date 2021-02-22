@@ -9,6 +9,7 @@ use App\Controllers\EventsController;
 use App\Controllers\GalleryController;
 use App\Controllers\UsersController;
 use App\Middlewares\AuthMiddleware;
+use App\Middlewares\CorsMiddleware;
 use App\Middlewares\JsonMiddleware;
 use Slim\Factory\AppFactory as SlimAppFactory;
 use Valitron\Validator;
@@ -37,6 +38,8 @@ class App
     $app = SlimAppFactory::create();
 
     $app->add(JsonMiddleware::class);
+    $app->add(CorsMiddleware::class);
+
     $this->registerControllers($app);
 
     $app->run();

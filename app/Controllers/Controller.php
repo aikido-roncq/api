@@ -20,13 +20,9 @@ class Controller
     {
         self::headers([
             'Content-Type' => 'application/json; charset=UTF-8',
-            'Access-Control-Allow-Methods' => 'GET,POST,PUT,PATCH,DELETE,OPTIONS'
+            'Access-Control-Allow-Methods' => 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+            'Access-Control-Allow-Origin' => '*'
         ]);
-
-        if ($_ENV['APP_ENV'] == 'dev')
-            self::headers([
-                'Access-Control-Allow-Origin' => '*'
-            ]);
 
         self::status($responseCode);
 

@@ -10,8 +10,8 @@ use App\Controllers\GalleryController;
 use App\Controllers\UsersController;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\CorsMiddleware;
+use App\Middlewares\ErrorsMiddleware;
 use App\Middlewares\JsonMiddleware;
-use App\Middlewares\NotFoundMiddleware;
 use Slim\Factory\AppFactory as SlimAppFactory;
 use Valitron\Validator;
 use Slim\App as SlimApp;
@@ -32,19 +32,28 @@ class App
     UsersController::class,
   ];
 
+  const MIDDLEWARES = [
+    JsonMiddleware::class,
+    CorsMiddleware::class,
+    ErrorsMiddleware::class,
+  ];
+
   public function __construct()
   {
     Dotenv::createImmutable(ROOT)->load();
     Validator::lang('fr');
     $app = SlimAppFactory::create();
 
-    $app->add(JsonMiddleware::class);
-    $app->add(CorsMiddleware::class);
-    $app->add(NotFoundMiddleware::class);
-
-    $this->registerControllers($app);
+    self::registerMiddlewares($app);
+    self::registerControllers($app);
 
     $app->run();
+  }
+
+  private static function registerMiddlewares(SlimApp $app)
+  {
+    foreach (self::MIDDLEWARES as $middleware)
+      $app->add($middleware);
   }
 
   private static function registerControllers(SlimApp $app)

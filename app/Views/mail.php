@@ -16,6 +16,7 @@
   <p><strong>De:</strong> <?= $name ?></p>
 
   <p><?= $content ?></p>
+
 </body>
 
 </html>

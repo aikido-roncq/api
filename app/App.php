@@ -11,6 +11,7 @@ use App\Controllers\UsersController;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\CorsMiddleware;
 use App\Middlewares\JsonMiddleware;
+use App\Middlewares\NotFoundMiddleware;
 use Slim\Factory\AppFactory as SlimAppFactory;
 use Valitron\Validator;
 use Slim\App as SlimApp;
@@ -39,6 +40,7 @@ class App
 
     $app->add(JsonMiddleware::class);
     $app->add(CorsMiddleware::class);
+    $app->add(NotFoundMiddleware::class);
 
     $this->registerControllers($app);
 

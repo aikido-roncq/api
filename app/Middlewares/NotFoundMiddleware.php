@@ -18,6 +18,7 @@ class NotFoundMiddleware
     } catch (HttpNotFoundException | HttpMethodNotAllowedException $e) {
       return (new Response())->withStatus(404);
     } catch (Exception $e) {
+      error_log($e->getMessage());
       return (new Response())->withStatus(500);
     }
   }

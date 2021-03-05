@@ -22,7 +22,7 @@ class Controller
             'Content-Type' => 'application/json; charset=UTF-8',
             'Access-Control-Allow-Methods' => 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
             'Access-Control-Allow-Origin' => '*',
-            'Access-Control-Allow-Header' => 'Content-Type'
+            'Access-Control-Allow-Headers' => 'Content-Type'
         ]);
 
         self::status($responseCode);

@@ -6,6 +6,8 @@ class CorsController extends Controller
 {
   public function preflight()
   {
-    self::status(200);
+    self::headers([
+      'Access-Control-Allow-Origin' => '*'
+    ]);
   }
 }

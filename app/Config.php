@@ -22,6 +22,6 @@ class Config
 
   public static function ENV_IS_DEV()
   {
-    return getenv('APP_ENV') === 'dev';
+    return $_ENV['APP_ENV'] === 'dev';
   }
 }

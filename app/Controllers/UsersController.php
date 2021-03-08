@@ -41,7 +41,7 @@ class UsersController extends Controller
 
     [$user, $pw] = [$credentials['login'], $credentials['password']];
 
-    if ($user != $_ENV['ADMIN_USER'] || $pw != $_ENV['ADMIN_PW']) {
+    if ($user != getenv('ADMIN_USER') || $pw != getenv('ADMIN_PW')) {
       sleep(2); // prevent brutforce attacks
       return $res
         ->withHeader('WWW-Authenticate', 'Basic realm="Dashboard"')
@@ -125,9 +125,9 @@ class UsersController extends Controller
 
     $mail = new PHPMailer();
     $mail->CharSet = 'UTF-8';
-    $mail->Mailer = $_ENV['MAILER'];
-    $mail->Host = $_ENV['MAIL_HOST'];
-    $mail->Port = $_ENV['MAIL_PORT'];
+    $mail->Mailer = getenv('MAILER');
+    $mail->Host = getenv('MAIL_HOST');
+    $mail->Port = getenv('MAIL_PORT');
     $mail->SMTPAuth = false;
     $mail->SMTPAutoTLS = false;
     $mail->setFrom($data['email']);

@@ -47,8 +47,8 @@ abstract class ControllerTest extends TestCase
 
   protected function login()
   {
-    $login = $_ENV['ADMIN_USER'];
-    $password = $_ENV['ADMIN_PW'];
+    $login = getenv('ADMIN_USER');
+    $password = getenv('ADMIN_PW');
     $credentials = base64_encode("$login:$password");
     $res = $this->client->post('/login', [
       'headers' => [

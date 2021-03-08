@@ -69,7 +69,7 @@ class App
     $reflection = new ReflectionClass($controller);
     $classAttributes = $reflection->getAttributes();
     $methods = $reflection->getMethods();
-    $prefix = '';
+    $prefix = null;
 
     if ($classAttributes)
       $prefix = $classAttributes[0]->newInstance()->getPath();

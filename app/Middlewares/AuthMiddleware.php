@@ -3,8 +3,8 @@
 namespace App\Middlewares;
 
 use App\Models\Connections;
-use GuzzleHttp\Psr7\Response;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Psr7\Response;
 use Slim\Psr7\Request;
 
 class AuthMiddleware

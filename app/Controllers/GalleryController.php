@@ -38,7 +38,8 @@ class GalleryController extends Controller
     if (!array_key_exists('image', $_FILES))
       return self::badRequest($res, ['image' => 'Image non reçue.']);
 
-    $data = ['caption' => $_POST['caption'] ?? null];
+    $post = $req->getParsedBody();
+    $data = ['caption' => $post['caption'] ?? null];
 
     try {
       $src = self::upload($_FILES['image']);

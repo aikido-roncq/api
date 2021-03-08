@@ -17,11 +17,6 @@ class Controller
     return $res;
   }
 
-  protected static function readData()
-  {
-    return json_decode(file_get_contents('php://input'), true);
-  }
-
   protected static function send(Response $res, $data, int $code = 200)
   {
     return self::json($res, $data)

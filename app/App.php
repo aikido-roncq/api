@@ -44,6 +44,8 @@ class App
     Validator::lang('fr');
     $app = SlimAppFactory::create();
 
+    $app->addBodyParsingMiddleware();
+
     self::registerMiddlewares($app);
     self::registerControllers($app);
 

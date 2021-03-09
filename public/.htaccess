@@ -8,10 +8,12 @@ RewriteCond %{HTTP_HOST} aikido-roncq\.fr [NC]
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [L,R=301]
 
-# Redirect trailing slashes if not a folder
+# Remove trailing slashes if not a folder
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} (.+)/$
 RewriteRule ^ %1 [L,R=301]
+
+RewriteRule .\* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ index.php

@@ -23,6 +23,12 @@ class UsersController extends Controller
 
     $credentials = [];
 
+    if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+      $authorization = substr($_SERVER['HTTP_AUTHORIZATION'], 6);
+      [$login, $password] = explode(':', base64_decode($authorization));
+      $credentials = compact('login', 'password');
+    }
+
     if (array_key_exists('PHP_AUTH_USER', $_SERVER))
       $credentials['login'] = $_SERVER['PHP_AUTH_USER'];
 

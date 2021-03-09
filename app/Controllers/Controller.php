@@ -25,6 +25,7 @@ class Controller
 
   protected static function error(Response $res, Exception $e)
   {
+    error_log($e);
     return self::json($res, ['message' => $e->getMessage()])
       ->withStatus($e->getCode());
   }

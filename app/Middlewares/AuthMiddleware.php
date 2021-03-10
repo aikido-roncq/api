@@ -9,7 +9,7 @@ use Slim\Psr7\Request;
 
 class AuthMiddleware
 {
-  public function __invoke(Request $req, RequestHandler $handler)
+  public function __invoke(Request $req, RequestHandler $handler): Response
   {
     if (self::isLoggedIn($req))
       return $handler->handle($req);

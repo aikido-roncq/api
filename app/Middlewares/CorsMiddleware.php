@@ -4,10 +4,11 @@ namespace App\Middlewares;
 
 use Slim\Psr7\Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Psr7\Response;
 
 class CorsMiddleware
 {
-  public function __invoke(Request $req, RequestHandler $handler)
+  public function __invoke(Request $req, RequestHandler $handler): Response
   {
     $res = $handler->handle($req);
 

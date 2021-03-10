@@ -4,7 +4,7 @@ namespace App\Middlewares;
 
 use Exception;
 use App\Exceptions\HttpException;
-use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Psr7\Request;
@@ -12,7 +12,7 @@ use Slim\Psr7\Response;
 
 class ErrorsMiddleware
 {
-  public function __invoke(Request $req, RequestHandlerInterface $handler): Response
+  public function __invoke(Request $req, RequestHandler $handler): Response
   {
     try {
       return $handler->handle($req);

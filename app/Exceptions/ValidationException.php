@@ -2,16 +2,14 @@
 
 namespace App\Exceptions;
 
-use Exception;
-
-class ValidationException extends Exception
+class ValidationException extends HttpException
 {
-  private array $errors = [];
   protected $code = 400;
+  protected $message = 'Erreur lors de la validation des données.';
+  private array $errors = [];
 
   public function __construct(array $errors)
   {
-    parent::__construct();
     $this->errors = $errors;
   }
 

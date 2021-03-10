@@ -6,7 +6,6 @@ use App\Models\Articles;
 use App\Attributes\Route;
 use App\Exceptions\ValidationException;
 use App\Utils;
-use Exception;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
@@ -16,24 +15,14 @@ class ArticlesController extends Controller
   #[Route('[/]', 'GET')]
   public function all(Request $req, Response $res)
   {
-    try {
-      $articles = Articles::orderBy('date', 'desc');
-    } catch (Exception $e) {
-      return self::error($res, $e);
-    }
-
+    $articles = Articles::orderBy('date', 'desc');
     return self::send($res, $articles);
   }
 
   #[Route('/{slug}', 'GET')]
   public function find(Request $req, Response $res, array $args)
   {
-    try {
-      $article = Articles::find($args['slug']);
-    } catch (Exception $e) {
-      return self::error($res, $e);
-    }
-
+    $article = Articles::find($args['slug']);
     return self::send($res, $article);
   }
 
@@ -46,8 +35,6 @@ class ArticlesController extends Controller
       $article = Articles::create($data);
     } catch (ValidationException $e) {
       return self::badRequest($res, $e->getErrors());
-    } catch (Exception $e) {
-      return self::error($res, $e);
     }
 
     return self::send($res, $article, 201);
@@ -64,8 +51,6 @@ class ArticlesController extends Controller
       $article = Articles::update($args['slug'], array_filter($data));
     } catch (ValidationException $e) {
       return self::badRequest($res, $e->getErrors());
-    } catch (Exception $e) {
-      return self::error($res, $e);
     }
 
     return self::send($res, $article);
@@ -74,12 +59,7 @@ class ArticlesController extends Controller
   #[Route('/{slug}', 'DELETE', admin: true)]
   public function delete(Request $req, Response $res, array $args)
   {
-    try {
-      $article = Articles::delete($args['slug']);
-    } catch (Exception $e) {
-      return self::error($res, $e);
-    }
-
+    $article = Articles::delete($args['slug']);
     return self::send($res, $article);
   }
 }

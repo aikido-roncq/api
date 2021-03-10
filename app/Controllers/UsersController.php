@@ -48,12 +48,7 @@ class UsersController extends Controller
         ->withStatus(401);
     }
 
-    try {
-      $connection = Connections::create();
-    } catch (Exception $e) {
-      return self::error($res, $e);
-    }
-
+    $connection = Connections::create();
     $cookie = self::tokenToCookie($connection->token);
 
     return $res
@@ -67,8 +62,6 @@ class UsersController extends Controller
     try {
       Connections::revoke(self::extractToken($req));
     } catch (LoggedOutException $e) {
-    } catch (Exception $e) {
-      self::error($res, $e);
     }
 
     $cookie = self::tokenToCookie();
@@ -78,7 +71,7 @@ class UsersController extends Controller
       ->withStatus(205);
   }
 
-  private static function tokenToCookie(string $token = '')
+  private static function tokenToCookie(string $token = ''): string
   {
     $maxAge = Config::TOKEN_LIFETIME;
     $https = 'Secure';
@@ -109,16 +102,13 @@ class UsersController extends Controller
     if (!$v->validate())
       return self::badRequest($res, $v->errors());
 
-    try {
-      self::sendMail($data);
-    } catch (Exception $e) {
-      return self::error($res, $e);
-    }
+    if (!self::sendMail($data))
+      throw new UnknownException();
 
     return self::send($res, ['message' => 'Votre message a été envoyé avec succès.']);
   }
 
-  private static function sendMail(array $data)
+  private static function sendMail(array $data): bool
   {
     $data = Utils::filterKeys($data, ['name', 'email', 'content']);
     $data['content'] = htmlentities($data['content']);
@@ -136,7 +126,6 @@ class UsersController extends Controller
     $mail->Subject = 'Nouveau message via aikido-roncq.fr';
     $mail->Body = self::getView('mail', $data);
 
-    if (!$mail->send())
-      throw new UnknownException();
+    return $mail->send();
   }
 }

@@ -6,7 +6,6 @@ use App\Attributes\Route;
 use App\Exceptions\UnknownException;
 use App\Exceptions\ValidationException;
 use App\Models\Gallery;
-use Exception;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
@@ -23,12 +22,7 @@ class GalleryController extends Controller
   #[Route('[/]', 'GET')]
   public function all(Request $req, Response $res)
   {
-    try {
-      $gallery = Gallery::orderBy('added');
-    } catch (Exception $e) {
-      return self::error($res, $e);
-    }
-
+    $gallery = Gallery::orderBy('added');
     return self::send($res, $gallery);
   }
 
@@ -46,8 +40,6 @@ class GalleryController extends Controller
       $image = Gallery::create(array_merge($data, compact('src')));
     } catch (ValidationException $e) {
       return self::badRequest($res, $e->getErrors());
-    } catch (Exception $e) {
-      return self::error($res, $e);
     }
 
     return self::send($res, $image, 201);

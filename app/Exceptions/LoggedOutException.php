@@ -2,9 +2,7 @@
 
 namespace App\Exceptions;
 
-use Exception;
-
-class LoggedOutException extends Exception
+class LoggedOutException extends HttpException
 {
   protected $code = 401;
   protected $message = "Vous n'êtes pas connecté.";

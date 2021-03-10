@@ -23,13 +23,6 @@ class Controller
       ->withStatus($code);
   }
 
-  protected static function error(Response $res, Exception $e)
-  {
-    error_log($e);
-    return self::json($res, ['message' => $e->getMessage()])
-      ->withStatus($e->getCode());
-  }
-
   protected static function badRequest(Response $res, array $errors)
   {
     return self::json($res, $errors)

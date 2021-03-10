@@ -3,17 +3,17 @@ RewriteBase /
 
 SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0
 
+# Remove trailing slashes if not a folder
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} (.+)/$
+RewriteRule ^ %1 [L,R=301]
+
 # Protect the .htaccess file
 RewriteRule /?\.htaccess$ - [F,L]
 
 RewriteCond %{HTTP_HOST} aikido-roncq\.fr [NC]
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [L,R=301]
-
-# Remove trailing slashes if not a folder
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI} (.+)/$
-RewriteRule ^ %1 [L,R=301]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ index.php

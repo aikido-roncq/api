@@ -88,7 +88,7 @@ class UsersController extends Controller
   #[Route('/contact', 'POST')]
   public function contact(Request $req, Response $res)
   {
-    $data = $req->getParsedBody() ?? [];
+    $data = $req->getParsedBody();
 
     $v = Utils::validate($data, [
       'required' => ['name', 'email', 'content'],

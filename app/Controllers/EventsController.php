@@ -28,7 +28,7 @@ class EventsController extends Controller
   #[Route('[/]', 'POST', admin: true)]
   public function add(Request $req, Response $res)
   {
-    $data = $req->getParsedBody() ?? [];
+    $data = $req->getParsedBody();
 
     try {
       $event = Events::create($data);
@@ -42,7 +42,7 @@ class EventsController extends Controller
   #[Route('/{id}', 'PATCH', admin: true)]
   public function edit(Request $req, Response $res, array $args)
   {
-    $data = $req->getParsedBody() ?? [];
+    $data = $req->getParsedBody();
 
     try {
       $event = Events::update($args['id'], $data);

@@ -12,6 +12,7 @@ use App\Middlewares\AuthMiddleware;
 use App\Middlewares\CorsMiddleware;
 use App\Middlewares\ErrorsMiddleware;
 use App\Middlewares\JsonMiddleware;
+use App\Middlewares\ParsedBodyMiddleware;
 use Slim\Factory\AppFactory as SlimAppFactory;
 use Valitron\Validator;
 use Slim\App as SlimApp;
@@ -33,6 +34,7 @@ class App
   ];
 
   const MIDDLEWARES = [
+    ParsedBodyMiddleware::class,
     JsonMiddleware::class,
     CorsMiddleware::class,
     ErrorsMiddleware::class,
@@ -44,10 +46,10 @@ class App
     Validator::lang('fr');
     $app = SlimAppFactory::create();
 
-    $app->addBodyParsingMiddleware();
-
     self::registerMiddlewares($app);
     self::registerControllers($app);
+
+    $app->addBodyParsingMiddleware();
 
     $app->run();
   }

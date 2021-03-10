@@ -29,7 +29,7 @@ class ArticlesController extends Controller
   #[Route('[/]', 'POST', admin: true)]
   public function add(Request $req, Response $res)
   {
-    $data = $req->getParsedBody() ?? [];
+    $data = $req->getParsedBody();
 
     try {
       $article = Articles::create($data);
@@ -43,7 +43,7 @@ class ArticlesController extends Controller
   #[Route('/{slug}', 'PATCH', admin: true)]
   public function edit(Request $req, Response $res, array $args)
   {
-    $data = $req->getParsedBody() ?? [];
+    $data = $req->getParsedBody();
 
     $data = Utils::filterKeys($data, ['title', 'content']);
 

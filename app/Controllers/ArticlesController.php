@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Models\Articles;
 use App\Attributes\Route;
-use App\Exceptions\ValidationException;
 use App\Utils;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
@@ -30,13 +29,7 @@ class ArticlesController extends Controller
   public function add(Request $req, Response $res)
   {
     $data = $req->getParsedBody();
-
-    try {
-      $article = Articles::create($data);
-    } catch (ValidationException $e) {
-      return self::badRequest($res, $e->getErrors());
-    }
-
+    $article = Articles::create($data);
     return self::send($res, $article, 201);
   }
 
@@ -44,15 +37,8 @@ class ArticlesController extends Controller
   public function edit(Request $req, Response $res, array $args)
   {
     $data = $req->getParsedBody();
-
     $data = Utils::filterKeys($data, ['title', 'content']);
-
-    try {
-      $article = Articles::update($args['slug'], array_filter($data));
-    } catch (ValidationException $e) {
-      return self::badRequest($res, $e->getErrors());
-    }
-
+    $article = Articles::update($args['slug'], array_filter($data));
     return self::send($res, $article);
   }
 

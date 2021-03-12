@@ -35,12 +35,8 @@ class GalleryController extends Controller
     $post = $req->getParsedBody();
     $data = ['caption' => $post['caption'] ?? null];
 
-    try {
-      $src = self::upload($_FILES['image']);
-      $image = Gallery::create(array_merge($data, compact('src')));
-    } catch (ValidationException $e) {
-      return self::badRequest($res, $e->getErrors());
-    }
+    $src = self::upload($_FILES['image']);
+    $image = Gallery::create(array_merge($data, compact('src')));
 
     return self::send($res, $image, 201);
   }

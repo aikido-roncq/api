@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Attributes\Route;
-use App\Exceptions\ValidationException;
 use App\Models\Events;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
@@ -29,13 +28,7 @@ class EventsController extends Controller
   public function add(Request $req, Response $res)
   {
     $data = $req->getParsedBody();
-
-    try {
-      $event = Events::create($data);
-    } catch (ValidationException $e) {
-      return self::badRequest($res, $e->getErrors());
-    }
-
+    $event = Events::create($data);
     return self::send($res, $event, 201);
   }
 
@@ -43,13 +36,7 @@ class EventsController extends Controller
   public function edit(Request $req, Response $res, array $args)
   {
     $data = $req->getParsedBody();
-
-    try {
-      $event = Events::update($args['id'], $data);
-    } catch (ValidationException $e) {
-      return self::badRequest($res, $e->getErrors());
-    }
-
+    $event = Events::update($args['id'], $data);
     return self::send($res, $event);
   }
 

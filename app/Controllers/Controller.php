@@ -23,12 +23,6 @@ class Controller
       ->withStatus($code);
   }
 
-  protected static function badRequest(Response $res, array $errors)
-  {
-    return self::json($res, $errors)
-      ->withStatus(400);
-  }
-
   protected static function isLoggedIn(Request $req)
   {
     try {

@@ -7,8 +7,8 @@ use App\Exceptions\LoggedOutException;
 use App\Models\Connections;
 use App\Config;
 use App\Exceptions\UnknownException;
+use App\Exceptions\ValidationException;
 use App\Utils;
-use Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
@@ -37,7 +37,7 @@ class UsersController extends Controller
     ]);
 
     if (!$v->validate())
-      return self::badRequest($res, $v->errors());
+      throw new ValidationException($v->errors());
 
     [$user, $pw] = [$credentials['login'], $credentials['password']];
 
@@ -100,7 +100,7 @@ class UsersController extends Controller
     ]);
 
     if (!$v->validate())
-      return self::badRequest($res, $v->errors());
+      throw new ValidationException($v->errors());
 
     if (!self::sendMail($data))
       throw new UnknownException();

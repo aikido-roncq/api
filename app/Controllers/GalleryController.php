@@ -33,10 +33,14 @@ class GalleryController extends Controller
       throw new ValidationException(['image' => 'Image non reçue']);
 
     $post = $req->getParsedBody();
-    $data = ['caption' => $post['caption'] ?? null];
-
     $src = self::upload($_FILES['image']);
-    $image = Gallery::create(array_merge($data, compact('src')));
+
+    $data = [
+      'caption' => $post['caption'] ?? null,
+      'src' => $src
+    ];
+
+    $image = Gallery::create($data);
 
     return self::send($res, $image, 201);
   }

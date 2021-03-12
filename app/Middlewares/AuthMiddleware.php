@@ -23,7 +23,7 @@ class AuthMiddleware
     return $res->withStatus(401);
   }
 
-  private static function isLoggedIn(Request $req)
+  public static function isLoggedIn(Request $req)
   {
     $cookies = $req->getCookieParams();
 

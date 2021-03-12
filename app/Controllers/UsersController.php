@@ -8,6 +8,7 @@ use App\Models\Connections;
 use App\Config;
 use App\Exceptions\UnknownException;
 use App\Exceptions\ValidationException;
+use App\Middlewares\AuthMiddleware;
 use App\Utils;
 use PHPMailer\PHPMailer\PHPMailer;
 use Slim\Psr7\Request;
@@ -18,7 +19,7 @@ class UsersController extends Controller
   #[Route('/login', 'POST')]
   public function login(Request $req, Response $res)
   {
-    if (self::isLoggedIn($req))
+    if (AuthMiddleware::isLoggedIn($req))
       return $res->withStatus(200);
 
     $credentials = [];
@@ -69,6 +70,16 @@ class UsersController extends Controller
     return $res
       ->withHeader('Set-Cookie', $cookie)
       ->withStatus(205);
+  }
+
+  private static function extractToken(Request $req): string
+  {
+    $cookies = $req->getCookieParams();
+
+    if (!array_key_exists('token', $cookies))
+      throw new LoggedOutException();
+
+    return $cookies['token'];
   }
 
   private static function tokenToCookie(string $token = ''): string

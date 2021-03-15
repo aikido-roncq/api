@@ -113,19 +113,16 @@ class UsersController extends Controller
     if (!$v->validate())
       throw new ValidationException($v->errors());
 
-    $user = $data['email'];
-    $self = 'no-reply@aikido-roncq.fr';
-
     self::sendMail($data, [
-      'from' => $user,
-      'to' => $self,
+      'from' => $data['email'],
+      'to' => 'contact@aikido-roncq.fr',
       'subject' => 'Nouveau message via aikido-roncq.fr',
       'view' => 'mail',
     ]);
 
     self::sendMail($data, [
-      'from' => $self,
-      'to' => $user,
+      'from' => 'no-reply@aikido-roncq.fr',
+      'to' => $data['email'],
       'subject' => 'Prise en compte de votre message',
       'view' => 'confirm',
     ]);

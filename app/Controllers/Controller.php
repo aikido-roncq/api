@@ -7,13 +7,13 @@ use Slim\Psr7\Response;
 
 class Controller
 {
-  protected static function send(Response $res, $data, int $code = 200)
+  protected static function send(Response $res, $data, int $code = 200): Response
   {
     $res->getBody()->write(json_encode($data));
     return $res->withStatus($code);
   }
 
-  protected static function getView(string $view, array $args)
+  protected static function getView(string $view, array $args): string
   {
     extract($args);
     ob_start();

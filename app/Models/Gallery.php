@@ -4,10 +4,10 @@ namespace App\Models;
 
 class Gallery extends Model
 {
-  protected static string $pk = 'src';
+  protected static string $pk = 'id';
 
   protected static array $keys = [
-    'src', 'caption', 'added'
+    'id', 'src', 'caption', 'added'
   ];
 
   protected static array $rules = [
@@ -18,7 +18,8 @@ class Gallery extends Model
     ],
     'dateFormat' => [
       ['added', 'Y-m-d H:i:s']
-    ]
+    ],
+    'integer' => ['id']
   ];
 
   protected static array $labels = [

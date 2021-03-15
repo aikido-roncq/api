@@ -45,6 +45,14 @@ class GalleryController extends Controller
     return self::send($res, $image, 201);
   }
 
+  #[Route('/{id}', 'DELETE')]
+  public function delete(Request $req, Response $res, array $params)
+  {
+    $deleted = Gallery::delete($params['id']);
+    unlink(ROOT . '/public/' . $deleted->src);
+    return self::send($res, $deleted);
+  }
+
   private static function upload(array $file): string
   {
     $filename = bin2hex(random_bytes(4));

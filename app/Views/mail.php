@@ -1,9 +1,8 @@
 <?php
 
 /**
- * Variables:
- *  - $name (user's name
- *  - $content (message's content)
+ * @var string $name the user's name
+ * @var string $content the message's content
  */
 
 ?>

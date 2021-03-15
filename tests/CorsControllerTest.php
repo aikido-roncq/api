@@ -9,8 +9,12 @@ class CorsControllerTest extends ControllerTest
   public function testOptionsReturns200()
   {
     foreach (self::SAMPLE_ROUTES as $route) {
-      $r = $this->client->request('OPTIONS', $route);
-      $this->assertEquals(200, $r->getStatusCode());
+      $res = $this->client->request('OPTIONS', $route);
+      $headers = $res->getHeaders();
+      $this->assertEquals(200, $res->getStatusCode());
+      $this->assertArrayHasKey('Access-Control-Allow-Origin', $headers);
+      $this->assertArrayHasKey('Access-Control-Allow-Headers', $headers);
+      $this->assertArrayHasKey('Access-Control-Allow-Methods', $headers);
     }
   }
 }

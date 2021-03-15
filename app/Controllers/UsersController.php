@@ -113,13 +113,33 @@ class UsersController extends Controller
     if (!$v->validate())
       throw new ValidationException($v->errors());
 
-    if (!self::sendMail($data))
-      throw new UnknownException();
+    $user = $data['email'];
+    $self = 'no-reply@aikido-roncq.fr';
 
-    return self::send($res, ['message' => 'Votre message a été envoyé avec succès.']);
+    self::sendMail($data, [
+      'from' => $user,
+      'to' => $self,
+      'subject' => 'Nouveau message via aikido-roncq.fr',
+      'view' => 'mail',
+    ]);
+
+    self::sendMail($data, [
+      'from' => $self,
+      'to' => $user,
+      'subject' => 'Prise en compte de votre message',
+      'view' => 'confirm',
+    ]);
+
+    return self::send($res, [
+      'message' => 'Votre message a été envoyé avec succès.'
+    ]);
   }
 
-  private static function sendMail(array $data): bool
+  /**
+   * @throws UnknownException
+   * @throws Exception
+   */
+  private static function sendMail(array $data, array $options)
   {
     $data = Utils::filterKeys($data, ['name', 'email', 'content']);
     $data['content'] = htmlentities($data['content']);
@@ -131,12 +151,13 @@ class UsersController extends Controller
     $mail->Port = $_ENV['MAIL_PORT'];
     $mail->SMTPAuth = false;
     $mail->SMTPAutoTLS = false;
-    $mail->setFrom($data['email']);
-    $mail->addAddress('contact@aikido-roncq.fr');
+    $mail->setFrom($options['from']);
+    $mail->addAddress($options['to']);
     $mail->isHTML();
-    $mail->Subject = 'Nouveau message via aikido-roncq.fr';
-    $mail->Body = self::getView('mail', $data);
+    $mail->Subject = $options['subject'];
+    $mail->Body = self::getView($options['view'], $data);
 
-    return $mail->send();
+    if (!$mail->send())
+      throw new UnknownException();
   }
 }

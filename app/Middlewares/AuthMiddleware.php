@@ -20,7 +20,9 @@ class AuthMiddleware
       'message' => "Vous n'êtes pas connecté"
     ]));
 
-    return $res->withStatus(401);
+    return $res
+      ->withHeader('WWW-Authenticate', 'Basic realm="Dashboard"')
+      ->withStatus(401);
   }
 
   public static function isLoggedIn(Request $req)

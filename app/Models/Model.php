@@ -102,7 +102,7 @@ abstract class Model
    * @throws PDOException
    * @throws UnknownException
    */
-  public static function create(array $fields = []): self
+  public static function insert(array $fields = []): self
   {
     $instance = static::make($fields);
     $values = get_object_vars($instance);

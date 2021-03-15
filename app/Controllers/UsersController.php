@@ -49,7 +49,7 @@ class UsersController extends Controller
         ->withStatus(401);
     }
 
-    $connection = Connections::create();
+    $connection = Connections::insert();
     $cookie = self::tokenToCookie($connection->token);
 
     return $res

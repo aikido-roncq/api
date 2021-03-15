@@ -29,7 +29,7 @@ class ArticlesController extends Controller
   public function add(Request $req, Response $res)
   {
     $data = $req->getParsedBody();
-    $article = Articles::create($data);
+    $article = Articles::insert($data);
     return self::send($res, $article, 201);
   }
 

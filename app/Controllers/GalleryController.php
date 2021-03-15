@@ -40,7 +40,7 @@ class GalleryController extends Controller
       'src' => $src
     ];
 
-    $image = Gallery::create($data);
+    $image = Gallery::insert($data);
 
     return self::send($res, $image, 201);
   }

@@ -28,7 +28,7 @@ class EventsController extends Controller
   public function add(Request $req, Response $res)
   {
     $data = $req->getParsedBody();
-    $event = Events::create($data);
+    $event = Events::insert($data);
     return self::send($res, $event, 201);
   }
 

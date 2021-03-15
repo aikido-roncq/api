@@ -17,7 +17,7 @@ abstract class Factory
       $DB_PASS = $_ENV['DB_PASS'];
       $DSN = "mysql:host=$DB_HOST;dbname=$DB_NAME;charset=utf8mb4";
 
-      self::$pdo = new PDO($DSN, $DB_USER, $DB_PASS, Config::PDOopts());
+      self::$pdo = new PDO($DSN, $DB_USER, $DB_PASS, Config::PDO_OPTIONS);
     }
 
     return self::$pdo;

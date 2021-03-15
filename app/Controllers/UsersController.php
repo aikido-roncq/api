@@ -91,7 +91,7 @@ class UsersController extends Controller
       $maxAge = 0;
 
     if (Config::ENV_IS_DEV())
-      $https = '';
+      $https = null;
 
     return "token=$token; Max-Age=$maxAge; HttpOnly; $https";
   }

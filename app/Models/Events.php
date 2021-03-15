@@ -32,7 +32,7 @@ class Events extends Model
     'end_date' => 'La date de fin',
   ];
 
-  public static function make(array $data = [])
+  public static function make(array $data = []): self
   {
     if (Utils::allKeysExist(['start_date', 'end_date'], $data))
       if ($data['start_date'] > $data['end_date'])

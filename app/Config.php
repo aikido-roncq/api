@@ -12,7 +12,7 @@ class Config
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
   ];
 
-  public static function ENV_IS_DEV()
+  public static function ENV_IS_DEV(): bool
   {
     return $_ENV['APP_ENV'] === 'dev';
   }

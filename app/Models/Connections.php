@@ -23,7 +23,7 @@ class Connections extends Model
 
   protected static array $labels = [];
 
-  public static function make(array $fields = [])
+  public static function make(array $fields = []): self
   {
     $fields = [
       'token' => bin2hex(random_bytes(16)),
@@ -41,7 +41,7 @@ class Connections extends Model
     ]);
   }
 
-  public static function isValid(string $token)
+  public static function isValid(string $token): bool
   {
     try {
       $record = self::find($token);

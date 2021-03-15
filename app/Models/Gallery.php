@@ -25,7 +25,7 @@ class Gallery extends Model
     'caption' => 'La légende'
   ];
 
-  public static function make(array $data = [])
+  public static function make(array $data = []): self
   {
     return new self($data);
   }

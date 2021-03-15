@@ -8,6 +8,7 @@ use App\Exceptions\ValidationException;
 use Ludal\QueryBuilder\QueryBuilder;
 use App\Factory;
 use App\Utils;
+use PDOException;
 
 abstract class Model
 {
@@ -16,6 +17,9 @@ abstract class Model
   protected static array $rules;
   protected static array $labels;
 
+  /**
+   * @throws ValidationException
+   */
   public function __construct(array $fields = [])
   {
     $allowedFields = Utils::filterKeys($fields, static::$keys);
@@ -28,20 +32,24 @@ abstract class Model
       $this->$key = $value;
   }
 
-  protected abstract static function make(array $fields = []);
+  protected abstract static function make(array $fields = []): self;
 
-  private static function builder()
+  private static function builder(): QueryBuilder
   {
     return new QueryBuilder(Factory::pdo());
   }
 
-  private static function table()
+  private static function table(): string
   {
     $className = explode('\\', static::class);
     return strtolower(end($className));
   }
 
-  public static function find(string $key)
+  /**
+   * @throws PDOException
+   * @throws NotFoundException
+   */
+  public static function find(string $key): self
   {
     $row = self::builder()
       ->select()
@@ -56,7 +64,10 @@ abstract class Model
     return new static($row);
   }
 
-  public static function all(array $conditions = [])
+  /**
+   * @throws PDOException
+   */
+  public static function all(array $conditions = []): array
   {
     $rows = self::builder()
       ->select()
@@ -69,15 +80,15 @@ abstract class Model
     }, $rows);
   }
 
-  public static function orderBy(string $key = null, string $order = 'asc', array $conditions = [])
+  /**
+   * @throws PDOException
+   */
+  public static function orderBy(string $key, string $order = 'asc', array $conds = []): array
   {
-    if (is_null($key))
-      $key = static::$pk;
-
     $rows = self::builder()
       ->select()
       ->from(static::table())
-      ->where(...$conditions)
+      ->where(...$conds)
       ->orderBy($key, $order)
       ->fetchAll();
 
@@ -86,7 +97,12 @@ abstract class Model
     }, $rows);
   }
 
-  public static function create(array $fields = [])
+  /**
+   * @throws ValidationException
+   * @throws PDOException
+   * @throws UnknownException
+   */
+  public static function create(array $fields = []): self
   {
     $instance = static::make($fields);
     $values = get_object_vars($instance);
@@ -104,7 +120,12 @@ abstract class Model
     return self::find($pk);
   }
 
-  public static function delete(string $key)
+  /**
+   * @throws NotFoundException
+   * @throws PDOException
+   * @throws UnknownException
+   */
+  public static function delete(string $key): self
   {
     $entry = self::find($key);
 
@@ -120,7 +141,13 @@ abstract class Model
     return $entry;
   }
 
-  public static function update(string $key, array $new_fields)
+  /**
+   * @throws NotFoundException
+   * @throws ValidationException
+   * @throws PDOException
+   * @throws UnknownException
+   */
+  public static function update(string $key, array $new_fields): self
   {
     $fields = get_object_vars(self::find($key));
     $updated = array_merge($fields, $new_fields);

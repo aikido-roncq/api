@@ -34,7 +34,7 @@ class Articles extends Model
     'content' => 'Le contenu'
   ];
 
-  protected static function make(array $fields = [])
+  protected static function make(array $fields = []): self
   {
     if (array_key_exists('title', $fields))
       $fields['slug'] = self::slugify($fields['title']);
@@ -44,7 +44,7 @@ class Articles extends Model
     return new self($fields);
   }
 
-  public static function update(string $key, array $fields)
+  public static function update(string $key, array $fields): self
   {
     if (array_key_exists('title', $fields))
       $fields['slug'] = self::slugify($fields['title']);
@@ -52,10 +52,10 @@ class Articles extends Model
     return parent::update($key, $fields);
   }
 
-  private static function slugify(string $title)
+  private static function slugify(string $title): string
   {
     $slug = (new Slugify)->slugify($title);
     $token = bin2hex(random_bytes(2));
-    return  sprintf('%s-%s', $slug, $token);
+    return sprintf('%s-%s', $slug, $token);
   }
 }

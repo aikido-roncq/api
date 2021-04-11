@@ -1,21 +1,9 @@
 <?php
 
-namespace App;
+namespace Utils;
 
-use Valitron\Validator;
-
-abstract class Utils
+abstract class Arrays
 {
-  public static function validate(array $data, array $rules, array $labels = []): Validator
-  {
-    $v = new Validator($data);
-
-    $v->rules($rules);
-    $v->labels($labels);
-
-    return $v;
-  }
-
   public static function filterKeys(array $input, array $allowedKeys): array
   {
     return array_filter($input, function ($key) use ($allowedKeys) {

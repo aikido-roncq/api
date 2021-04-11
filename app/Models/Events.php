@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Exceptions\ValidationException;
-use App\Utils;
+use Utils\Arrays;
 
 class Events extends Model
 {
@@ -34,7 +34,7 @@ class Events extends Model
 
   public static function make(array $data = []): self
   {
-    if (Utils::allKeysExist(['start_date', 'end_date'], $data))
+    if (Arrays::allKeysExist(['start_date', 'end_date'], $data))
       if ($data['start_date'] > $data['end_date'])
         throw new ValidationException([
           'end_date' => 'La date de fin ne peut pas être avant celle de début'

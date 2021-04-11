@@ -7,8 +7,9 @@ use App\Exceptions\UnknownException;
 use App\Exceptions\ValidationException;
 use Ludal\QueryBuilder\QueryBuilder;
 use App\Factory;
-use App\Utils;
 use PDOException;
+use Utils\Arrays;
+use Utils\Validation;
 
 abstract class Model
 {
@@ -22,8 +23,8 @@ abstract class Model
    */
   public function __construct(array $fields = [])
   {
-    $allowedFields = Utils::filterKeys($fields, static::$keys);
-    $valitron = Utils::validate($allowedFields, static::$rules, static::$labels);
+    $allowedFields = Arrays::filterKeys($fields, static::$keys);
+    $valitron = Validation::validate($allowedFields, static::$rules, static::$labels);
 
     if (!$valitron->validate())
       throw new ValidationException($valitron->errors());

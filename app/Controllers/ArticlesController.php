@@ -4,9 +4,9 @@ namespace App\Controllers;
 
 use App\Models\Articles;
 use App\Attributes\Route;
-use App\Utils;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
+use Utils\Arrays;
 use Utils\Http;
 
 #[Route('/articles')]
@@ -38,7 +38,7 @@ class ArticlesController extends Controller
   public function edit(Request $req, Response $res, array $args)
   {
     $data = $req->getParsedBody();
-    $data = Utils::filterKeys($data, ['title', 'content']);
+    $data = Arrays::filterKeys($data, ['title', 'content']);
     $article = Articles::update($args['slug'], array_filter($data));
     return self::send($res, $article);
   }

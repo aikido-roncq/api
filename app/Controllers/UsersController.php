@@ -9,10 +9,11 @@ use App\Config;
 use App\Exceptions\UnknownException;
 use App\Exceptions\ValidationException;
 use App\Middlewares\AuthMiddleware;
-use App\Utils;
+use Utils\Validation;
 use PHPMailer\PHPMailer\PHPMailer;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
+use Utils\Arrays;
 use Utils\Http;
 
 class UsersController extends Controller
@@ -31,7 +32,7 @@ class UsersController extends Controller
       $credentials = compact('login', 'password');
     }
 
-    $v = Utils::validate($credentials, [
+    $v = Validation::validate($credentials, [
       'required' => ['login', 'password']
     ], [
       'login' => 'Le login',
@@ -102,7 +103,7 @@ class UsersController extends Controller
   {
     $data = $req->getParsedBody();
 
-    $v = Utils::validate($data, [
+    $v = Validation::validate($data, [
       'required' => ['name', 'email', 'content'],
       'email' => ['email']
     ], [
@@ -139,7 +140,7 @@ class UsersController extends Controller
    */
   private static function sendMail(array $data, array $options)
   {
-    $data = Utils::filterKeys($data, ['name', 'email', 'content']);
+    $data = Arrays::filterKeys($data, ['name', 'email', 'content']);
     $data['content'] = htmlentities($data['content']);
 
     $mail = new PHPMailer();

@@ -7,6 +7,7 @@ use App\Attributes\Route;
 use App\Utils;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
+use Utils\Http;
 
 #[Route('/articles')]
 class ArticlesController extends Controller
@@ -30,7 +31,7 @@ class ArticlesController extends Controller
   {
     $data = $req->getParsedBody();
     $article = Articles::insert($data);
-    return self::send($res, $article, 201);
+    return self::send($res, $article, Http::CREATED);
   }
 
   #[Route('/{slug}', 'PATCH', admin: true)]

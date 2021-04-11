@@ -4,10 +4,11 @@ namespace App\Controllers;
 
 use App\App;
 use Slim\Psr7\Response;
+use Utils\Http;
 
 class Controller
 {
-  protected static function send(Response $res, $data, int $code = 200): Response
+  protected static function send(Response $res, $data, int $code = Http::OK): Response
   {
     $res->getBody()->write(json_encode($data));
     return $res->withStatus($code);

@@ -6,6 +6,7 @@ use App\Models\Connections;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response;
 use Slim\Psr7\Request;
+use Utils\Http;
 
 class AuthMiddleware
 {
@@ -22,7 +23,7 @@ class AuthMiddleware
 
     return $res
       ->withHeader('WWW-Authenticate', 'Basic realm="Dashboard"')
-      ->withStatus(401);
+      ->withStatus(Http::UNAUTHORIZED);
   }
 
   public static function isLoggedIn(Request $req)

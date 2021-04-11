@@ -10,6 +10,7 @@ use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
+use Utils\Http;
 
 class ErrorsMiddleware
 {
@@ -18,14 +19,14 @@ class ErrorsMiddleware
     try {
       return $handler->handle($req);
     } catch (HttpNotFoundException | HttpMethodNotAllowedException $e) {
-      return (new Response())->withStatus(404);
+      return (new Response())->withStatus(Http::NOT_FOUND);
     } catch (ValidationException $e) {
       return self::handle($e, $e->getCode(), $e->getErrors());
     } catch (HttpException $e) {
       return self::handle($e, $e->getCode());
     } catch (Exception $e) {
       error_log($e);
-      return self::handle($e, 500);
+      return self::handle($e, Http::INTERNAL_SERVER_ERROR);
     }
   }
 

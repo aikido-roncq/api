@@ -13,6 +13,7 @@ use App\Utils;
 use PHPMailer\PHPMailer\PHPMailer;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
+use Utils\Http;
 
 class UsersController extends Controller
 {
@@ -20,7 +21,7 @@ class UsersController extends Controller
   public function login(Request $req, Response $res)
   {
     if (AuthMiddleware::isLoggedIn($req))
-      return $res->withStatus(200);
+      return $res->withStatus(Http::OK);
 
     $credentials = [];
 
@@ -46,7 +47,7 @@ class UsersController extends Controller
       sleep(2); // prevent brutforce attacks
       return $res
         ->withHeader('WWW-Authenticate', 'Basic realm="Dashboard"')
-        ->withStatus(401);
+        ->withStatus(Http::UNAUTHORIZED);
     }
 
     $connection = Connections::insert();
@@ -54,7 +55,7 @@ class UsersController extends Controller
 
     return $res
       ->withHeader('Set-Cookie', $cookie)
-      ->withStatus(200);
+      ->withStatus(Http::OK);
   }
 
   #[Route('/logout', 'POST')]
@@ -69,7 +70,7 @@ class UsersController extends Controller
 
     return $res
       ->withHeader('Set-Cookie', $cookie)
-      ->withStatus(205);
+      ->withStatus(Http::RESET_CONTENT);
   }
 
   private static function extractToken(Request $req): string

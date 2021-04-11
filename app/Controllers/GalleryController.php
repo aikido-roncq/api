@@ -8,6 +8,7 @@ use App\Exceptions\ValidationException;
 use App\Models\Gallery;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
+use Utils\Http;
 
 #[Route('/gallery')]
 class GalleryController extends Controller
@@ -42,7 +43,7 @@ class GalleryController extends Controller
 
     $image = Gallery::insert($data);
 
-    return self::send($res, $image, 201);
+    return self::send($res, $image, Http::CREATED);
   }
 
   #[Route('/{id}', 'DELETE')]

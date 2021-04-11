@@ -6,6 +6,7 @@ use App\Attributes\Route;
 use App\Models\Events;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
+use Utils\Http;
 
 #[Route('/events')]
 class EventsController extends Controller
@@ -29,7 +30,7 @@ class EventsController extends Controller
   {
     $data = $req->getParsedBody();
     $event = Events::insert($data);
-    return self::send($res, $event, 201);
+    return self::send($res, $event, Http::CREATED);
   }
 
   #[Route('/{id}', 'PATCH', admin: true)]

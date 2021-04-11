@@ -2,9 +2,11 @@
 
 namespace App\Exceptions;
 
+use Utils\Http;
+
 class ValidationException extends HttpException
 {
-  protected $code = 400;
+  protected $code = Http::BAD_REQUEST;
   protected $message = 'Erreur lors de la validation des données.';
   private array $errors = [];
 

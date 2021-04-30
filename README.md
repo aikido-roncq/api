@@ -3,11 +3,11 @@
 
 API of the Roncq's aïkido club.
 
-# 📚 Prerequisites
+## 📚 Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/)
 
-# ▶ Run the project
+## ▶ Run the project
 
 ```
 docker-compose up --build -d

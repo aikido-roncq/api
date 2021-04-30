@@ -1,5 +1,5 @@
 
-# ⚙ Aïkido Roncq API
+# Aïkido Roncq API ⚙
 
 API of the Roncq's aïkido club.
 

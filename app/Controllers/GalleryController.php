@@ -20,6 +20,8 @@ class GalleryController extends Controller
     'gif' => 'imagegif'
   ];
 
+  private const BASE_URL = 'assets/gallery';
+
   #[Route('[/]', 'GET')]
   public function all(Request $req, Response $res)
   {
@@ -64,8 +66,8 @@ class GalleryController extends Controller
     elseif (!in_array($ext, array_keys(self::ALLOWED_EXT)))
       throw new ValidationException(['image' => 'Extension non supportée.']);
 
-    $publicPath = sprintf('/assets/gallery/%s.%s', $filename, $ext);
-    $realPath = ROOT . '/public' . $publicPath;
+    $publicPath = self::BASE_URL . "/$filename.$ext";
+    $realPath = ROOT . "/public/$publicPath";
 
     if (!self::resizeImage($file['tmp_name'], $ext))
       throw new UnknownException();

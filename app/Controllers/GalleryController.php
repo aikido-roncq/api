@@ -48,7 +48,7 @@ class GalleryController extends Controller
     return self::send($res, $image, Http::CREATED);
   }
 
-  #[Route('/{id}', 'DELETE')]
+  #[Route('/{id}', 'DELETE', admin: true)]
   public function delete(Request $req, Response $res, array $params)
   {
     $deleted = Gallery::delete($params['id']);

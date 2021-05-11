@@ -26,7 +26,7 @@ class Connections extends Model
   public static function make(array $fields = []): self
   {
     $fields = [
-      'token' => bin2hex(random_bytes(16)),
+      'token' => hash('sha256', microtime()),
       'iat' => date('Y-m-d H:i:s'),
       'exp' => date('Y-m-d H:i:s', time() + Config::TOKEN_LIFETIME),
     ];

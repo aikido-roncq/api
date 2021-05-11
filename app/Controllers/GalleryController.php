@@ -58,7 +58,7 @@ class GalleryController extends Controller
 
   private static function upload(array $file): string
   {
-    $filename = bin2hex(random_bytes(4));
+    $filename = hash('crc32', microtime());
     [$type, $ext] = explode('/', $file['type']);
 
     if ($type != 'image')

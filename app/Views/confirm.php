@@ -19,8 +19,7 @@
   <p>Bonjour, <strong> <?= $name ?> </strong> ! 👋</p>
 
   <p>
-    Nous avons bien reçu votre message : il sera traité au plus vite, et nous
-    vous répondrons dans les meilleurs délais.
+    Nous avons bien reçu votre message, et nous y répondrons dans les meilleurs délais.
   </p>
 
   <p>

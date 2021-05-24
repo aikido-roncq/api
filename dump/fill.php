@@ -53,14 +53,3 @@ for ($i = 0; $i < N_EVENTS; $i++) {
     ->execute();
 }
 
-// INSERT IMAGES
-for ($i = 0; $i < N_IMAGES; $i++) {
-  $src = "assets/gallery/{$faker->word()}.jpg";
-  $caption = $i < 4 ? $faker->sentence() : null;
-  $added = $faker->dateTimeBetween('-15 days', 'today')->format('Y-m-d H:i:s');
-
-  $builder
-    ->insertInto('gallery')
-    ->values(compact('src', 'caption', 'added'))
-    ->execute();
-}

@@ -55,7 +55,7 @@ class Articles extends Model
   private static function slugify(string $title): string
   {
     $slug = (new Slugify)->slugify($title);
-    $token = bin2hex(random_bytes(2));
+    $token = hash('crc32', microtime());
     return sprintf('%s-%s', $slug, $token);
   }
 }

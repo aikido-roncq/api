@@ -52,11 +52,8 @@ class UsersController extends Controller
     }
 
     $connection = Connections::insert();
-    $cookie = self::tokenToCookie($connection->token);
 
-    return $res
-      ->withHeader('Set-Cookie', $cookie)
-      ->withStatus(Http::OK);
+    return self::send($res, ['token' => $connection->token]);
   }
 
   #[Route('/logout', 'POST')]

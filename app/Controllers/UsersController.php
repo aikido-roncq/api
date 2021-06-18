@@ -3,12 +3,12 @@
 namespace App\Controllers;
 
 use App\Attributes\Route;
-use App\Exceptions\LoggedOutException;
+use App\Exceptions\NotFoundException;
 use App\Models\Connections;
-use App\Config;
 use App\Exceptions\UnknownException;
 use App\Exceptions\ValidationException;
 use App\Middlewares\AuthMiddleware;
+use Exception;
 use Utils\Validation;
 use PHPMailer\PHPMailer\PHPMailer;
 use Slim\Psr7\Request;
@@ -59,40 +59,14 @@ class UsersController extends Controller
   #[Route('/logout', 'POST')]
   public function logout(Request $req, Response $res)
   {
+    $token = AuthMiddleware::getToken($req);
+
     try {
-      Connections::revoke(self::extractToken($req));
-    } catch (LoggedOutException $e) {
+      Connections::revoke($token);
+    } catch (NotFoundException $e) {
     }
 
-    $cookie = self::tokenToCookie();
-
-    return $res
-      ->withHeader('Set-Cookie', $cookie)
-      ->withStatus(Http::RESET_CONTENT);
-  }
-
-  private static function extractToken(Request $req): string
-  {
-    $cookies = $req->getCookieParams();
-
-    if (!array_key_exists('token', $cookies))
-      throw new LoggedOutException();
-
-    return $cookies['token'];
-  }
-
-  private static function tokenToCookie(string $token = ''): string
-  {
-    $maxAge = Config::TOKEN_LIFETIME;
-    $https = 'Secure';
-
-    if (empty($token))
-      $maxAge = 0;
-
-    if (Config::ENV_IS_DEV())
-      $https = null;
-
-    return "token=$token; Max-Age=$maxAge; HttpOnly; $https";
+    return $res->withStatus(Http::RESET_CONTENT);
   }
 
   #[Route('/contact', 'POST')]

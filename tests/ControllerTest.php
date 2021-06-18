@@ -5,6 +5,7 @@ namespace Tests;
 use Dotenv\Dotenv;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class ControllerTest extends TestCase
 {
@@ -12,6 +13,11 @@ abstract class ControllerTest extends TestCase
   protected const BASE_URI = '';
   protected const KEYS = [];
   protected const PK = '';
+
+  private const CLIENT_OPTS = [
+    'base_uri' => self::HOST,
+    'timeout' => 5,
+  ];
 
   /**
    * @var Client
@@ -30,11 +36,7 @@ abstract class ControllerTest extends TestCase
 
   protected static function newClient()
   {
-    return new Client([
-      'base_uri' => self::HOST,
-      'cookies' => true,
-      'timeout' => 5,
-    ]);
+    return new Client(self::CLIENT_OPTS);
   }
 
   protected function get(string $endpoint)
@@ -45,7 +47,7 @@ abstract class ControllerTest extends TestCase
     return [$code, $body];
   }
 
-  protected function login()
+  protected function login(): ResponseInterface
   {
     $login = $_ENV['ADMIN_USER'];
     $password = $_ENV['ADMIN_PW'];

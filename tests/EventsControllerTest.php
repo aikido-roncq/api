@@ -70,9 +70,13 @@ class EventsControllerTest extends ControllerTest
 
   public function testPostWhenMissingData()
   {
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
     $this->expectExceptionCode(400);
     $this->client->post(self::BASE_URI, [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ],
       'json' => [
         'title' => 'New title',
         'end_date' => '2021-09-04',
@@ -82,9 +86,13 @@ class EventsControllerTest extends ControllerTest
 
   public function testPostWithInvalidDates()
   {
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
     $this->expectExceptionCode(400);
     $this->client->post(self::BASE_URI, [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ],
       'json' => [
         'title' => 'New title',
         'info' => 'Some info',
@@ -96,7 +104,8 @@ class EventsControllerTest extends ControllerTest
 
   public function testPostSuccessfull()
   {
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
 
     $data = [
       'title' => 'New title',
@@ -106,6 +115,9 @@ class EventsControllerTest extends ControllerTest
     ];
 
     $res = $this->client->post(self::BASE_URI, [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ],
       'json' => $data
     ]);
 
@@ -130,17 +142,27 @@ class EventsControllerTest extends ControllerTest
 
   public function testDeleteNonExistingEvent()
   {
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
 
     $this->expectExceptionCode(404);
-    $this->client->delete(self::BASE_URI . '/3498339');
+    $this->client->delete(self::BASE_URI . '/3498339', [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ],
+    ]);
   }
 
   public function testDeleteSuccessfull()
   {
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
     $firstId = $this->first();
-    $res = $this->client->delete(self::BASE_URI . "/$firstId");
+    $res = $this->client->delete(self::BASE_URI . "/$firstId", [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ]
+    ]);
 
     $this->assertEquals(200, $res->getStatusCode());
     $this->assertNotEquals($this->first(), $firstId);
@@ -163,11 +185,15 @@ class EventsControllerTest extends ControllerTest
 
   public function testEditNonExistentEvent()
   {
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
     $id = 5838434;
 
     $this->expectExceptionCode(404);
     $this->client->patch(self::BASE_URI . "/$id", [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ],
       'json' => [
         'title' => 'New title'
       ]
@@ -176,10 +202,14 @@ class EventsControllerTest extends ControllerTest
 
   public function testEditSuccessfull()
   {
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
     $firstId = $this->first();
 
     $res = $this->client->patch(self::BASE_URI . "/$firstId", [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ],
       'json' => [
         'title' => 'New title'
       ]

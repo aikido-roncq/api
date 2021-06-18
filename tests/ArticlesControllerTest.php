@@ -78,9 +78,13 @@ class ArticlesControllerTest extends ControllerTest
 
   public function testPostSuccessfull()
   {
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
 
     $res = $this->client->post(self::BASE_URI, [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ],
       'json' => [
         'title' => 'Sample title',
         'content' => 'Sample content'
@@ -95,10 +99,14 @@ class ArticlesControllerTest extends ControllerTest
 
   public function testPostWithExistingTitleShouldSuccess()
   {
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
     $existingTitle = $this->first('title');
 
     $res = $this->client->post(self::BASE_URI, [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ],
       'json' => [
         'title' => $existingTitle,
         'content' => 'Sample content'
@@ -133,12 +141,17 @@ class ArticlesControllerTest extends ControllerTest
 
   public function testDeleteThatDoesntExist()
   {
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
 
     $randomSlug = self::randomStr();
 
     try {
-      $this->client->delete(self::BASE_URI . "/$randomSlug");
+      $this->client->delete(self::BASE_URI . "/$randomSlug", [
+        'headers' => [
+          'Authorization' => "Bearer $token"
+        ],
+      ]);
       throw new Exception('Should throw 404 exception', 0);
     } catch (Exception $e) {
       $this->assertEquals(404, $e->getCode());
@@ -147,9 +160,14 @@ class ArticlesControllerTest extends ControllerTest
 
   public function testDeletedSuccessfully()
   {
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
     $firstSlug = $this->first();
-    $res = $this->client->delete(self::BASE_URI . "/$firstSlug");
+    $res = $this->client->delete(self::BASE_URI . "/$firstSlug", [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ],
+    ]);
     $body = self::getBody($res);
 
     $this->assertEquals(200, $res->getStatusCode());
@@ -181,9 +199,13 @@ class ArticlesControllerTest extends ControllerTest
   public function testEditNonExistent()
   {
     $this->expectExceptionCode(404);
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
     $randomSlug = self::randomStr();
     $this->client->patch(self::BASE_URI . "/$randomSlug", [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ],
       'json' => [
         'title' => 'My new title'
       ]
@@ -192,11 +214,15 @@ class ArticlesControllerTest extends ControllerTest
 
   public function testEditSuccessfull()
   {
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
     $firstSlug = $this->first();
     $randomTitle = self::randomStr();
     [, $oldArticle] = $this->get(self::BASE_URI . "/$firstSlug");
     $res = $this->client->patch(self::BASE_URI . "/$firstSlug", [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ],
       'json' => [
         'title' => $randomTitle
       ]
@@ -216,9 +242,13 @@ class ArticlesControllerTest extends ControllerTest
 
   public function testEditSuccessfullWithExtraKeys()
   {
-    $this->login();
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
     $firstSlug = $this->first();
     $res = $this->client->patch(self::BASE_URI . "/$firstSlug", [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ],
       'json' => [
         'title' => 'Some title',
         'field0' => 'test',

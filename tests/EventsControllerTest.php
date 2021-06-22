@@ -169,14 +169,14 @@ class EventsControllerTest extends ControllerTest
   }
 
   // ========================================================================
-  // PATCH /:id
+  // PUT /:id
   // ========================================================================
   public function testEditWhenLoggedOut()
   {
     $firstId = $this->first();
 
     $this->expectExceptionCode(401);
-    $this->client->patch(self::BASE_URI . "/$firstId", [
+    $this->client->put(self::BASE_URI . "/$firstId", [
       'json' => [
         'title' => 'New title'
       ]
@@ -190,7 +190,7 @@ class EventsControllerTest extends ControllerTest
     $id = 5838434;
 
     $this->expectExceptionCode(404);
-    $this->client->patch(self::BASE_URI . "/$id", [
+    $this->client->put(self::BASE_URI . "/$id", [
       'headers' => [
         'Authorization' => "Bearer $token"
       ],
@@ -206,7 +206,7 @@ class EventsControllerTest extends ControllerTest
     $token = $this->getBody($res)['token'];
     $firstId = $this->first();
 
-    $res = $this->client->patch(self::BASE_URI . "/$firstId", [
+    $res = $this->client->put(self::BASE_URI . "/$firstId", [
       'headers' => [
         'Authorization' => "Bearer $token"
       ],

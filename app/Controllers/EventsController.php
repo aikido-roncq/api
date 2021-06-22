@@ -33,7 +33,7 @@ class EventsController extends Controller
     return self::send($res, $event, Http::CREATED);
   }
 
-  #[Route('/{id}', 'PATCH', admin: true)]
+  #[Route('/{id}', 'PUT', admin: true)]
   public function edit(Request $req, Response $res, array $args)
   {
     $data = $req->getParsedBody();

@@ -36,8 +36,8 @@ class App
   const MIDDLEWARES = [
     ParsedBodyMiddleware::class,
     JsonMiddleware::class,
-    CorsMiddleware::class,
     ErrorsMiddleware::class,
+    CorsMiddleware::class,
   ];
 
   public function __construct()

@@ -19,10 +19,10 @@ class ArticlesController extends Controller
     return self::send($res, $articles);
   }
 
-  #[Route('/{slug}', 'GET')]
+  #[Route('/{id}', 'GET')]
   public function find(Request $req, Response $res, array $args)
   {
-    $article = Articles::find($args['slug']);
+    $article = Articles::find($args['id']);
     return self::send($res, $article);
   }
 
@@ -34,19 +34,19 @@ class ArticlesController extends Controller
     return self::send($res, $article, Http::CREATED);
   }
 
-  #[Route('/{slug}', 'PATCH', admin: true)]
+  #[Route('/{id}', 'PUT', admin: true)]
   public function edit(Request $req, Response $res, array $args)
   {
-    $data = $req->getParsedBody();
-    $data = Arrays::filterKeys($data, ['title', 'content']);
-    $article = Articles::update($args['slug'], array_filter($data));
+    $body = $req->getParsedBody();
+    $data = Arrays::filterKeys($body, ['title', 'content']);
+    $article = Articles::update($args['id'], array_filter($data));
     return self::send($res, $article);
   }
 
-  #[Route('/{slug}', 'DELETE', admin: true)]
+  #[Route('/{id}', 'DELETE', admin: true)]
   public function delete(Request $req, Response $res, array $args)
   {
-    $article = Articles::delete($args['slug']);
+    $article = Articles::delete($args['id']);
     return self::send($res, $article);
   }
 }

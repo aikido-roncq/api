@@ -9,7 +9,7 @@ class ArticlesControllerTest extends ControllerTest
 {
   protected const BASE_URI = '/articles';
   protected const KEYS = ['date', 'slug', 'title', 'content'];
-  protected const PK = 'slug';
+  protected const PK = 'id';
 
   // ========================================================================
   // GET /
@@ -42,23 +42,22 @@ class ArticlesControllerTest extends ControllerTest
 
 
   // ========================================================================
-  // GET /:slug
+  // GET /:id
   // ========================================================================
 
-  public function testFindBySlug()
+  public function testFindById()
   {
-    $firstSlug = $this->first();
-    [$code, $body] = $this->get(self::BASE_URI . '/' . $firstSlug);
+    $firstId = $this->first();
+    [$code, $body] = $this->get(self::BASE_URI . '/' . $firstId);
     $this->assertEquals(200, $code);
     $this->assertIsArray($body);
     $this->verifyKeys($body);
   }
 
-  public function testFindBySlugDoesntExist()
+  public function testFindByIdDoesntExist()
   {
     $this->expectExceptionCode(404);
-    $randomSlug = self::randomStr();
-    $this->get(self::BASE_URI . "/$randomSlug");
+    $this->get(self::BASE_URI . "/999999");
   }
 
   // ========================================================================
@@ -120,22 +119,22 @@ class ArticlesControllerTest extends ControllerTest
   }
 
   // ========================================================================
-  // DELETE /:slug
+  // DELETE /:id
   // ========================================================================
 
   public function testDeleteWhenNotLoggedIn()
   {
-    $firstSlug = $this->first();
+    $firstId = $this->first();
 
     try {
-      $this->client->delete(self::BASE_URI . "/$firstSlug");
+      $this->client->delete(self::BASE_URI . "/$firstId");
       throw new Exception('Should throw 401 exception', 0);
     } catch (Exception $e) {
       $this->assertEquals(401, $e->getCode());
     }
 
     // the article still exists
-    $res = $this->client->get(self::BASE_URI . "/$firstSlug");
+    $res = $this->client->get(self::BASE_URI . "/$firstId");
     $this->assertEquals(200, $res->getStatusCode());
   }
 
@@ -144,10 +143,8 @@ class ArticlesControllerTest extends ControllerTest
     $res = $this->login();
     $token = $this->getBody($res)['token'];
 
-    $randomSlug = self::randomStr();
-
     try {
-      $this->client->delete(self::BASE_URI . "/$randomSlug", [
+      $this->client->delete(self::BASE_URI . "/99999", [
         'headers' => [
           'Authorization' => "Bearer $token"
         ],
@@ -162,8 +159,8 @@ class ArticlesControllerTest extends ControllerTest
   {
     $res = $this->login();
     $token = $this->getBody($res)['token'];
-    $firstSlug = $this->first();
-    $res = $this->client->delete(self::BASE_URI . "/$firstSlug", [
+    $firstId = $this->first();
+    $res = $this->client->delete(self::BASE_URI . "/$firstId", [
       'headers' => [
         'Authorization' => "Bearer $token"
       ],
@@ -176,20 +173,20 @@ class ArticlesControllerTest extends ControllerTest
     [, $articles] = $this->get(self::BASE_URI);
 
     foreach ($articles as $article)
-      if ($article['slug'] == $firstSlug)
+      if ($article['id'] == $firstId)
         $this->fail('Article was not deleted');
   }
 
   // ========================================================================
-  // PATCH /:slug
+  // PUT /:id
   // ========================================================================
 
   public function testEditWhenNotLoggedIn()
   {
     $this->expectExceptionCode(401);
-    $firstSlug = $this->first();
+    $firstId = $this->first();
 
-    $this->client->patch(self::BASE_URI . "/$firstSlug", [
+    $this->client->put(self::BASE_URI . "/$firstId", [
       'json' => [
         'title' => 'My new title'
       ]
@@ -201,8 +198,7 @@ class ArticlesControllerTest extends ControllerTest
     $this->expectExceptionCode(404);
     $res = $this->login();
     $token = $this->getBody($res)['token'];
-    $randomSlug = self::randomStr();
-    $this->client->patch(self::BASE_URI . "/$randomSlug", [
+    $this->client->put(self::BASE_URI . "/99999", [
       'headers' => [
         'Authorization' => "Bearer $token"
       ],
@@ -216,10 +212,10 @@ class ArticlesControllerTest extends ControllerTest
   {
     $res = $this->login();
     $token = $this->getBody($res)['token'];
-    $firstSlug = $this->first();
+    $firstId = $this->first();
     $randomTitle = self::randomStr();
-    [, $oldArticle] = $this->get(self::BASE_URI . "/$firstSlug");
-    $res = $this->client->patch(self::BASE_URI . "/$firstSlug", [
+    [, $oldArticle] = $this->get(self::BASE_URI . "/$firstId");
+    $res = $this->client->put(self::BASE_URI . "/$firstId", [
       'headers' => [
         'Authorization' => "Bearer $token"
       ],
@@ -238,14 +234,15 @@ class ArticlesControllerTest extends ControllerTest
     $this->assertNotEquals($oldArticle['slug'], $newArticle['slug']);
     $this->assertEquals($oldArticle['content'], $newArticle['content']);
     $this->assertEquals($oldArticle['date'], $newArticle['date']);
+    $this->assertEquals($oldArticle['id'], $newArticle['id']);
   }
 
   public function testEditSuccessfullWithExtraKeys()
   {
     $res = $this->login();
     $token = $this->getBody($res)['token'];
-    $firstSlug = $this->first();
-    $res = $this->client->patch(self::BASE_URI . "/$firstSlug", [
+    $firstId = $this->first();
+    $res = $this->client->put(self::BASE_URI . "/$firstId", [
       'headers' => [
         'Authorization' => "Bearer $token"
       ],

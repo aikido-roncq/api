@@ -8,10 +8,10 @@ class Articles extends Model
 {
   private const DATE_FORMAT = 'Y-m-d H:i:s';
 
-  protected static string $pk = 'slug';
+  protected static string $pk = 'id';
 
   protected static array $keys = [
-    'date', 'slug', 'title', 'content'
+    'id', 'date', 'slug', 'title', 'content'
   ];
 
   protected static array $rules = [

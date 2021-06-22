@@ -9,9 +9,12 @@ class UsersControllerTest extends ControllerTest
   // ========================================================================
   public function testLoginInvalidCredentials()
   {
+    // Arrange
     $this->expectExceptionCode(401);
+
     $InvalidCredentials = base64_encode('invalid:credentials');
 
+    // Act
     self::newClient()->post('/login', [
       'headers' => [
         'Authorization' => "Basic $InvalidCredentials"
@@ -21,15 +24,25 @@ class UsersControllerTest extends ControllerTest
 
   public function testLoginWhenAlreadyLoggedIn()
   {
-    $this->login();
-    $this->assertEquals(200, $this->login()->getStatusCode());
+    // Act
+    $login1 = $this->login();
+    $login2 = $this->login();
+
+    // Assert
+    $this->assertEquals(200, $login1->getStatusCode());
+    $this->assertEquals(200, $login2->getStatusCode());
   }
 
   public function testLoginSuccessful()
   {
+    // Act
     $res = $this->login();
+    $body = $this->getBody($res);
+
+    // Assert
     $this->assertEquals(200, $res->getStatusCode());
-    $this->assertTrue($res->hasHeader('Set-Cookie'));
+    $this->assertArrayHasKey('token', $body);
+    $this->assertIsString($body['token']);
   }
 
   // ========================================================================
@@ -38,16 +51,28 @@ class UsersControllerTest extends ControllerTest
 
   public function testLogoutSuccessful()
   {
-    $this->login();
-    $res = $this->client->post('/logout');
+    // Arrange
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
+
+    // Act
+    $res = $this->client->post('/logout', [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ]
+    ]);
+
+    // Assert
     $this->assertEquals(205, $res->getStatusCode());
-    $this->assertTrue($res->hasHeader('Set-Cookie'));
   }
 
   public function testLogoutWhenNotLoggedIn()
   {
-    $res = $this->client->post('/logout');
-    $this->assertEquals(205, $res->getStatusCode());
+    // Arrange
+    $this->expectExceptionCode(400);
+
+    // Act
+    $this->client->post('/logout');
   }
 
   // ========================================================================
@@ -55,7 +80,10 @@ class UsersControllerTest extends ControllerTest
   // ========================================================================
   public function testContactWithMissingInformation()
   {
+    // Arrange
     $this->expectExceptionCode(400);
+
+    // Act
     $this->client->post('/contact', [
       'json' => [
         'name' => 'John'
@@ -65,7 +93,10 @@ class UsersControllerTest extends ControllerTest
 
   public function testContactWithInvalidInformation()
   {
+    // Arrange
     $this->expectExceptionCode(400);
+
+    // Act
     $this->client->post('/contact', [
       'json' => [
         'name' => 'John',
@@ -77,6 +108,7 @@ class UsersControllerTest extends ControllerTest
 
   public function testContactSuccessfull()
   {
+    // Act
     $res = $this->client->post('/contact', [
       'form_params' => [
         'name' => 'John',
@@ -85,17 +117,7 @@ class UsersControllerTest extends ControllerTest
       ]
     ]);
 
+    // Assert
     $this->assertEquals(200, $res->getStatusCode());
-  }
-
-  /* --------------------------------------------------------------------- */
-
-  private function postAnArticle()
-  {
-    $title = $this->randomStr();
-    $content = $this->randomStr();
-    return $this->client->post('/articles', [
-      'form_params' => compact('title', 'content')
-    ]);
   }
 }

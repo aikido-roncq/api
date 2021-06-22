@@ -2,6 +2,7 @@
 
 namespace App\Middlewares;
 
+use App\Exceptions\LoggedOutException;
 use App\Models\Connections;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response;
@@ -17,22 +18,43 @@ class AuthMiddleware
 
     $res = new Response();
 
-    $res->getBody()->write(json_encode([
-      'message' => "Vous n'êtes pas connecté"
-    ]));
-
     return $res
       ->withHeader('WWW-Authenticate', 'Basic realm="Dashboard"')
       ->withStatus(Http::UNAUTHORIZED);
   }
 
-  public static function isLoggedIn(Request $req)
+  /**
+   * Check whether or not the user is logged in.
+   * 
+   * @param $req the request
+   * @return bool true if the user is logged in
+   */
+  public static function isLoggedIn(Request $req): bool
   {
-    $cookies = $req->getCookieParams();
-
-    if (!array_key_exists('token', $cookies))
+    try {
+      $token = self::getToken($req);
+    } catch (LoggedOutException $e) {
       return false;
+    }
 
-    return Connections::isValid($cookies['token']);
+    return Connections::isValid($token);
+  }
+
+  /**
+   * Get the token from the request.
+   * 
+   * @param $req the request
+   * @return string the token
+   * @throws LoggedOutException if the token does not exist
+   */
+  public static function getToken(Request $req): string
+  {
+    $authorization = $req->getHeaderLine('Authorization');
+
+    if (!preg_match('/Bearer (.+)/', $authorization, $matches)) {
+      throw new LoggedOutException('No token was provided', 400);
+    }
+
+    return $matches[1];
   }
 }

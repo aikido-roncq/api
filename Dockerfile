@@ -13,6 +13,4 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp
 
 RUN docker-php-ext-install pdo_mysql gd
 
-EXPOSE 8000
-
 USER root

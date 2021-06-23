@@ -43,9 +43,6 @@ jobs:
         
       - name: Fill database
         run: docker exec aikido-php php dump/fill.php
-        
-      - name: Run a one-line script
-        run: echo Hello, world!
   
   tests:
     needs: setup

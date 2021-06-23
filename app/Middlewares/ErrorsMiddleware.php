@@ -11,6 +11,7 @@ use Slim\Exception\HttpNotFoundException;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use Utils\Http;
+use Utils\Logger;
 
 class ErrorsMiddleware
 {
@@ -19,13 +20,16 @@ class ErrorsMiddleware
     try {
       return $handler->handle($req);
     } catch (HttpNotFoundException | HttpMethodNotAllowedException $e) {
+      Logger::error("resource not found: {$e->getMessage()}");
       return (new Response())->withStatus(Http::NOT_FOUND);
     } catch (ValidationException $e) {
+      Logger::error("data validation failed: {$e->getMessage()}");
       return self::handle($e, $e->getCode(), $e->getErrors());
     } catch (HttpException $e) {
+      Logger::error("http exception: {$e->getMessage()} ({$e->getCode()}");
       return self::handle($e, $e->getCode());
     } catch (Exception $e) {
-      error_log($e);
+      Logger::error("unexpected exception: $e");
       return self::handle($e, Http::INTERNAL_SERVER_ERROR);
     }
   }

@@ -15,14 +15,17 @@ use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use Utils\Arrays;
 use Utils\Http;
+use Utils\Logger;
 
 class UsersController extends Controller
 {
   #[Route('/login', 'POST')]
   public function login(Request $req, Response $res)
   {
-    if (AuthMiddleware::isLoggedIn($req))
+    if (AuthMiddleware::isLoggedIn($req)) {
+      Logger::info('already logged in');
       return $res->withStatus(Http::OK);
+    }
 
     $credentials = [];
 
@@ -39,12 +42,14 @@ class UsersController extends Controller
       'password' => 'Le mot de passe'
     ]);
 
-    if (!$v->validate())
-      throw new ValidationException($v->errors());
+    if (!$v->validate()) {
+      throw new ValidationException('credentials not passing validation', $v->errors());
+    }
 
     [$user, $pw] = [$credentials['login'], $credentials['password']];
 
     if ($user != $_ENV['ADMIN_USER'] || $pw != $_ENV['ADMIN_PW']) {
+      Logger::error('invalid credentials');
       sleep(2); // prevent brutforce attacks
       return $res
         ->withHeader('WWW-Authenticate', 'Basic realm="Dashboard"')
@@ -64,6 +69,7 @@ class UsersController extends Controller
     try {
       Connections::revoke($token);
     } catch (NotFoundException $e) {
+      Logger::info('user was not logged in');
     }
 
     return $res->withStatus(Http::RESET_CONTENT);
@@ -83,8 +89,9 @@ class UsersController extends Controller
       'content' => "Le message"
     ]);
 
-    if (!$v->validate())
-      throw new ValidationException($v->errors());
+    if (!$v->validate()) {
+      throw new ValidationException('contact data not valid', $v->errors());
+    }
 
     self::sendMail($data, [
       'from' => $data['email'],
@@ -127,7 +134,9 @@ class UsersController extends Controller
     $mail->Subject = $options['subject'];
     $mail->Body = self::getView($options['view'], $data);
 
-    if (!$mail->send())
-      throw new UnknownException();
+    if (!$mail->send()) {
+      $recipient = $options['to'];
+      throw new UnknownException("could not send mail to $recipient");
+    }
   }
 }

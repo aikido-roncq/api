@@ -27,7 +27,7 @@ abstract class Model
     $valitron = Validation::validate($allowedFields, static::$rules, static::$labels);
 
     if (!$valitron->validate())
-      throw new ValidationException($valitron->errors());
+      throw new ValidationException('invalid data for model', $valitron->errors());
 
     foreach ($allowedFields as $key => $value)
       $this->$key = $value;
@@ -60,7 +60,7 @@ abstract class Model
       ->fetch();
 
     if (!$row)
-      throw new NotFoundException();
+      throw new NotFoundException("model with key '$key' not found");
 
     return new static($row);
   }
@@ -114,7 +114,7 @@ abstract class Model
       ->execute();
 
     if (!$created)
-      throw new UnknownException();
+      throw new UnknownException('create failed');
 
     $pk = $values[static::$pk] ?? self::builder()->lastInsertId();
 
@@ -137,7 +137,7 @@ abstract class Model
       ->execute();
 
     if (!$deleted)
-      throw new UnknownException();
+      throw new UnknownException('delete failed');
 
     return $entry;
   }
@@ -162,7 +162,7 @@ abstract class Model
       ->execute();
 
     if (!$executed)
-      throw new UnknownException();
+      throw new UnknownException('update failed');
 
     return $new_instance;
   }

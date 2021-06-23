@@ -32,8 +32,9 @@ class GalleryController extends Controller
   #[Route('[/]', 'POST', admin: true)]
   public function add(Request $req, Response $res)
   {
-    if (!array_key_exists('image', $_FILES))
-      throw new ValidationException(['image' => 'Image non reçue']);
+    if (!array_key_exists('image', $_FILES)) {
+      throw new ValidationException('image not received', ['image' => 'Image non reçue']);
+    }
 
     $post = $req->getParsedBody();
     $src = self::upload($_FILES['image']);
@@ -61,19 +62,26 @@ class GalleryController extends Controller
     $filename = hash('crc32', microtime());
     [$type, $ext] = explode('/', $file['type']);
 
-    if ($type != 'image')
-      throw new ValidationException(['image' => 'Type de fichier invalide.']);
-    elseif (!in_array($ext, array_keys(self::ALLOWED_EXT)))
-      throw new ValidationException(['image' => 'Extension non supportée.']);
+    if ($type != 'image') {
+      throw new ValidationException("$type is not valid image type", [
+        'image' => 'Type de fichier invalide.'
+      ]);
+    } elseif (!in_array($ext, array_keys(self::ALLOWED_EXT))) {
+      throw new ValidationException("$ext not supported", [
+        'image' => 'Extension non supportée.'
+      ]);
+    }
 
     $publicPath = self::BASE_URL . "/$filename.$ext";
     $realPath = ROOT . "/public/$publicPath";
 
-    if (!self::resizeImage($file['tmp_name'], $ext))
-      throw new UnknownException();
+    if (!self::resizeImage($file['tmp_name'], $ext)) {
+      throw new UnknownException('could not resize image');
+    }
 
-    if (!move_uploaded_file($file['tmp_name'], $realPath))
-      throw new UnknownException();
+    if (!move_uploaded_file($file['tmp_name'], $realPath)) {
+      throw new UnknownException('could not move uploaded image');
+    }
 
     return $publicPath;
   }
@@ -83,6 +91,10 @@ class GalleryController extends Controller
     $image = imagecreatefromstring(file_get_contents($path));
     [$initWidth, $initHeight] = getimagesize($path);
 
+    if (!$image) {
+      throw new UnknownException('could not create image from string');
+    }
+
     [$width, $height] = $initWidth > $initHeight
       ? [$initHeight * (16 / 9), $initHeight]
       : [$initWidth, $initWidth / (16 / 9)];
@@ -91,8 +103,9 @@ class GalleryController extends Controller
 
     $resized = imagecrop($image, compact('x', 'y', 'width', 'height'));
 
-    if (!$resized)
-      throw new UnknownException();
+    if (!$resized) {
+      throw new UnknownException('could not crop image');
+    }
 
     return call_user_func_array(self::ALLOWED_EXT[$ext], [$resized, $path]);
   }

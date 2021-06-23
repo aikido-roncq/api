@@ -8,19 +8,22 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response;
 use Slim\Psr7\Request;
 use Utils\Http;
+use Utils\Logger;
 
 class AuthMiddleware
 {
   public function __invoke(Request $req, RequestHandler $handler): Response
   {
-    if (self::isLoggedIn($req))
-      return $handler->handle($req);
+    if (!self::isLoggedIn($req)) {
+      $res = new Response();
+      Logger::error('not logged in');
 
-    $res = new Response();
+      return $res
+        ->withHeader('WWW-Authenticate', 'Basic realm="Dashboard"')
+        ->withStatus(Http::UNAUTHORIZED);
+    }
 
-    return $res
-      ->withHeader('WWW-Authenticate', 'Basic realm="Dashboard"')
-      ->withStatus(Http::UNAUTHORIZED);
+    return $handler->handle($req);
   }
 
   /**
@@ -52,6 +55,7 @@ class AuthMiddleware
     $authorization = $req->getHeaderLine('Authorization');
 
     if (!preg_match('/Bearer (.+)/', $authorization, $matches)) {
+      Logger::error('no token was provided');
       throw new LoggedOutException('No token was provided', 400);
     }
 

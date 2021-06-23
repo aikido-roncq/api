@@ -58,6 +58,8 @@ class UsersController extends Controller
 
     $connection = Connections::insert();
 
+    Logger::info('new login recorded');
+
     return self::send($res, ['token' => $connection->token]);
   }
 
@@ -138,5 +140,7 @@ class UsersController extends Controller
       $recipient = $options['to'];
       throw new UnknownException("could not send mail to $recipient");
     }
+
+    Logger::info('a new email has been sent');
   }
 }

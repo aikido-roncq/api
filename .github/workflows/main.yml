@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
+      # App
       APP_ENV: dev
       APP_LANG: fr
       # Database
@@ -41,7 +42,10 @@ jobs:
         run: composer install
         
       - name: Create .env
-        run: docker exec aikido-php chmod +x setup_env.sh && ./setup_env.sh
+        run: docker exec aikido-php chmod +x setup_env.sh && ./scripts/setup_env.sh
+
+      - name: Run migrations
+        run: docker exec aikido-php php dump/migratios.php
         
       - name: Fill database
         run: docker exec aikido-php php dump/fill.php

@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [master, develop]
   pull_request:
-    branches: [ master, develop ]
+    branches: [master, develop]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -12,11 +12,12 @@ on:
 jobs:
   main:
     runs-on: ubuntu-latest
-    
+
     env:
       # App
       APP_ENV: dev
       APP_LANG: fr
+      APP_HOST: http://aikido-php
       # Database
       DB_USER: root
       DB_PASS: root
@@ -32,23 +33,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Build the docker-compose stack
         run: |
           docker-compose -f docker-compose.yml up -d
           sleep 10
-        
+
       - name: Install dependencies
         run: composer install
-        
+
       - name: Create .env
         run: docker exec aikido-php chmod +x scripts/setup_env.sh && ./scripts/setup_env.sh
 
       - name: Run migrations
         run: docker exec aikido-php php dump/migrations.php
-        
+
       - name: Fill database
         run: docker exec aikido-php php dump/fill.php
-        
+
       - name: Run tests
         run: docker exec aikido-php vendor/bin/phpunit

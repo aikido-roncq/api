@@ -19,7 +19,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
     command: --default-authentication-plugin=mysql_native_password
     ports:
-      - 9906:3306
+      - 3306:3306
     volumes:
       - ./dump:/docker-entrypoint-initdb.d
       - persistent:/var/lib/mysql

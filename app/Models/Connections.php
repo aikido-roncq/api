@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Exceptions\NotFoundException;
 use App\Config;
+use Utils\Logger;
 
 class Connections extends Model
 {
@@ -46,6 +47,7 @@ class Connections extends Model
     try {
       $record = self::find($token);
     } catch (NotFoundException $e) {
+      Logger::error('invalid token');
       return false;
     }
 

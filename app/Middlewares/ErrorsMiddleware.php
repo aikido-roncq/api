@@ -26,7 +26,7 @@ class ErrorsMiddleware
       Logger::error("data validation failed: {$e->getMessage()}");
       return self::handle($e, $e->getCode(), $e->getErrors());
     } catch (HttpException $e) {
-      Logger::error("http exception: {$e->getMessage()} ({$e->getCode()}");
+      Logger::error("http exception: {$e->getMessage()} ({$e->getCode()})");
       return self::handle($e, $e->getCode());
     } catch (Exception $e) {
       Logger::error("unexpected exception: $e");

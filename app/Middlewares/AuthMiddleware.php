@@ -55,8 +55,7 @@ class AuthMiddleware
     $authorization = $req->getHeaderLine('Authorization');
 
     if (!preg_match('/Bearer (.+)/', $authorization, $matches)) {
-      Logger::error('no token was provided');
-      throw new LoggedOutException('No token was provided', 400);
+      throw new LoggedOutException('no token was provided', 400);
     }
 
     return $matches[1];

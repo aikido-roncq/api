@@ -36,5 +36,11 @@ jobs:
       - name: Build the docker-compose stack
         run: docker-compose -f docker-compose.yml up -d
         
+      - name: Fill database
+        run: docker exec aikido-php php dump/fill.php
+        
+      - name: Run tests
+        run: docker exec aikido-php vendor/bin/phpunit
+        
       - name: Run a one-line script
         run: echo Hello, world!

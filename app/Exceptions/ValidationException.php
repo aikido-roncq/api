@@ -6,12 +6,11 @@ use Utils\Http;
 
 class ValidationException extends HttpException
 {
-  protected $code = Http::BAD_REQUEST;
-  protected $message = 'Erreur lors de la validation des données.';
   private array $errors = [];
 
-  public function __construct(array $errors)
+  public function __construct(string $message, array $errors)
   {
+    parent::__construct($message, Http::BAD_REQUEST);
     $this->errors = $errors;
   }
 

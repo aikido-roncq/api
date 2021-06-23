@@ -1,11 +1,11 @@
 #!/bin/bash
 
-if test -f ".env"
+if test -f '.env'
 then
   exit 0
 fi
 
-envExample=".env.example"
+envExample='.env.example'
 
 while read line
 do

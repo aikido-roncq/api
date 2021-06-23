@@ -17,7 +17,7 @@ class GalleryControllerTest extends ControllerTest
     [$code, $images] = $this->get(self::BASE_URI);
 
     $this->assertEquals(200, $code);
-    $this->assertNotEquals([], $images);
+    $this->assertIsArray($images);
 
     foreach ($images as $image)
       $this->verifyKeys($image);

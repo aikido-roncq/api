@@ -3,4 +3,8 @@ vendor/
 public/assets/gallery/*
 logs/*
 !.gitkeep
+<<<<<<< HEAD
 .idea/
+=======
+*.cache
+>>>>>>> e6cae15 (feat: add github actions (#27))

@@ -7,15 +7,18 @@ use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
+Dotenv::createImmutable(dirname(__DIR__))->load();
+
+define('HOST', $_ENV['APP_HOST']);
+
 abstract class ControllerTest extends TestCase
 {
-  protected const HOST = 'http://localhost:8000';
   protected const BASE_URI = '';
   protected const KEYS = [];
   protected const PK = '';
 
   private const CLIENT_OPTS = [
-    'base_uri' => self::HOST,
+    'base_uri' => HOST,
     'timeout' => 5,
   ];
 
@@ -23,11 +26,6 @@ abstract class ControllerTest extends TestCase
    * @var Client
    */
   protected $client;
-
-  public static function setUpBeforeClass(): void
-  {
-    Dotenv::createImmutable(dirname(__DIR__))->load();
-  }
 
   public function setUp(): void
   {

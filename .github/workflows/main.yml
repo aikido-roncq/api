@@ -39,8 +39,8 @@ jobs:
       - name: Install dependencies
         run: composer install
         
-      - name: Create blank .env
-        run: touch .env
+      - name: Create .env
+        run: docker exec aikido-php chmod +x setup_env.sh && ./setup_env.sh
         
       - name: Fill database
         run: docker exec aikido-php php dump/fill.php

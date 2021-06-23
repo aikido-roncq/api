@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 
 abstract class ControllerTest extends TestCase
 {
-  protected const HOST = 'http://aikido-php';
+  protected const HOST = 'http://localhost:8000';
   protected const BASE_URI = '';
   protected const KEYS = [];
   protected const PK = '';

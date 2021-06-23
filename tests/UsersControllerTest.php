@@ -68,11 +68,11 @@ class UsersControllerTest extends ControllerTest
 
   public function testLogoutWhenNotLoggedIn()
   {
-    // Arrange
-    $this->expectExceptionCode(205);
-
     // Act
-    $this->client->post('/logout');
+    $res = $this->client->post('/logout');
+
+    // Assert
+    $this->assertEquals(205, $res->getStatusCode());
   }
 
   // ========================================================================

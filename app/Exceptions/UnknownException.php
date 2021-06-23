@@ -6,6 +6,8 @@ use Utils\Http;
 
 class UnknownException extends HttpException
 {
-  protected $code = Http::INTERNAL_SERVER_ERROR;
-  protected $message = 'Une erreur inconnue est survenue.';
+  public function __construct(string $message)
+  {
+    parent::__construct($message, Http::INTERNAL_SERVER_ERROR);
+  }
 }

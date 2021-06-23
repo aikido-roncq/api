@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Exceptions\ValidationException;
 use Utils\Arrays;
+use Utils\Logger;
 
 class Events extends Model
 {
@@ -34,11 +35,13 @@ class Events extends Model
 
   public static function make(array $data = []): self
   {
-    if (Arrays::allKeysExist(['start_date', 'end_date'], $data))
-      if ($data['start_date'] > $data['end_date'])
-        throw new ValidationException([
+    if (Arrays::allKeysExist(['start_date', 'end_date'], $data)) {
+      if ($data['start_date'] > $data['end_date']) {
+        throw new ValidationException('event start date is after end date', [
           'end_date' => 'La date de fin ne peut pas être avant celle de début'
         ]);
+      }
+    }
 
     return new self($data);
   }

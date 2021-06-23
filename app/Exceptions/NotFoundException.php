@@ -6,6 +6,8 @@ use Utils\Http;
 
 class NotFoundException extends HttpException
 {
-  protected $code = Http::NOT_FOUND;
-  protected $message = 'Non trouvé.';
+  public function __construct(string $message)
+  {
+    parent::__construct($message, Http::NOT_FOUND);
+  }
 }

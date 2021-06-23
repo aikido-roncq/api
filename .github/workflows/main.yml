@@ -10,8 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    # The type of runner that the job will run on
+  setup:
     runs-on: ubuntu-latest
     
     env:
@@ -45,8 +44,13 @@ jobs:
       - name: Fill database
         run: docker exec aikido-php php dump/fill.php
         
-      - name: Run tests
-        run: docker exec aikido-php vendor/bin/phpunit
-        
       - name: Run a one-line script
         run: echo Hello, world!
+  
+  tests:
+    needs: setup
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Run tests
+        run: docker exec aikido-php vendor/bin/phpunit

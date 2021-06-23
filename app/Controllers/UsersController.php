@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Attributes\Route;
+use App\Exceptions\LoggedOutException;
 use App\Exceptions\NotFoundException;
 use App\Models\Connections;
 use App\Exceptions\UnknownException;
@@ -66,11 +67,10 @@ class UsersController extends Controller
   #[Route('/logout', 'POST')]
   public function logout(Request $req, Response $res)
   {
-    $token = AuthMiddleware::getToken($req);
-
     try {
+      $token = AuthMiddleware::getToken($req);
       Connections::revoke($token);
-    } catch (NotFoundException $e) {
+    } catch (NotFoundException | LoggedOutException $e) {
       Logger::info('user was not logged in');
     }
 

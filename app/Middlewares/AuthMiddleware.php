@@ -10,8 +10,19 @@ use Slim\Psr7\Request;
 use Utils\Http;
 use Utils\Logger;
 
+/**
+ * Middleware to handle authentication
+ */
 class AuthMiddleware
 {
+  /**
+   * Verify that the user is logged in. If so, process the request. If not,
+   * return a 401 (unauthorized) response error.
+   * 
+   * @param Request $req the request
+   * @param RequestHandler $handler the request handler
+   * @return Response the final response
+   */
   public function __invoke(Request $req, RequestHandler $handler): Response
   {
     if (!self::isLoggedIn($req)) {
@@ -29,8 +40,9 @@ class AuthMiddleware
   /**
    * Check whether or not the user is logged in.
    * 
-   * @param $req the request
+   * @param Request $req the request
    * @return bool true if the user is logged in
+   * @throws PDOException on PDO error
    */
   public static function isLoggedIn(Request $req): bool
   {
@@ -46,7 +58,7 @@ class AuthMiddleware
   /**
    * Get the token from the request.
    * 
-   * @param $req the request
+   * @param Request $req the request
    * @return string the token
    * @throws LoggedOutException if the token does not exist
    */

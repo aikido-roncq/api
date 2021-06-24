@@ -11,15 +11,36 @@ use PDOException;
 use Utils\Arrays;
 use Utils\Validation;
 
+/**
+ * A model, which correspond to a table in the database
+ */
 abstract class Model
 {
+  /**
+   * The primary key
+   */
   protected static string $pk;
+
+  /**
+   * Table keys
+   */
   protected static array $keys;
+
+  /**
+   * Validation rules
+   */
   protected static array $rules;
+
+  /**
+   * Fields labels
+   */
   protected static array $labels;
 
   /**
-   * @throws ValidationException
+   * Create a new instance from input data
+   * 
+   * @param array $fields input fields
+   * @throws ValidationException the any field does not verify the rules
    */
   public function __construct(array $fields = [])
   {
@@ -33,13 +54,26 @@ abstract class Model
       $this->$key = $value;
   }
 
+  /**
+   * Create a new instance from input data
+   */
   protected abstract static function make(array $fields = []): self;
 
+  /**
+   * Get a new query builder instance
+   * 
+   * @return QueryBuilder a new query builder instance
+   */
   private static function builder(): QueryBuilder
   {
     return new QueryBuilder(Factory::pdo());
   }
 
+  /**
+   * Get the table name of the current model
+   * 
+   * @return string the table name
+   */
   private static function table(): string
   {
     $className = explode('\\', static::class);
@@ -47,8 +81,12 @@ abstract class Model
   }
 
   /**
-   * @throws PDOException
-   * @throws NotFoundException
+   * Find a row from the primary key
+   * 
+   * @param string $key the key to search for
+   * @return self an instance of the model that was found
+   * @throws PDOException on PDO error
+   * @throws NotFoundException if no such row was found
    */
   public static function find(string $key): self
   {
@@ -66,7 +104,11 @@ abstract class Model
   }
 
   /**
-   * @throws PDOException
+   * Get all the rows for the corresponding table
+   * 
+   * @param array $conditions the conditions
+   * @return array a list of model instances for the rows
+   * @throws PDOException on PDO error
    */
   public static function all(array $conditions = []): array
   {
@@ -82,6 +124,11 @@ abstract class Model
   }
 
   /**
+   * Find all the rows for the model and order them by the given key
+   * 
+   * @param string $key the key used for the order
+   * @param string $order asc or desc
+   * @param array $conds additionnal conditions
    * @throws PDOException
    */
   public static function orderBy(string $key, string $order = 'asc', array $conds = []): array
@@ -99,9 +146,13 @@ abstract class Model
   }
 
   /**
-   * @throws ValidationException
-   * @throws PDOException
-   * @throws UnknownException
+   * Insert a new row in the table of the corresponding model
+   * 
+   * @param array $fields the row fields
+   * @return self the newly inserted row as a model instance
+   * @throws ValidationException on data error
+   * @throws PDOException on PDO error
+   * @throws UnknownException on unknown error
    */
   public static function insert(array $fields = []): self
   {
@@ -122,9 +173,13 @@ abstract class Model
   }
 
   /**
-   * @throws NotFoundException
-   * @throws PDOException
-   * @throws UnknownException
+   * Delete a row from the given key
+   * 
+   * @param string $key the key of the row to delete
+   * @return self the deleted row as a model instance
+   * @throws NotFoundException if no such row was found
+   * @throws PDOException on PDO error
+   * @throws UnknownException on unknown error
    */
   public static function delete(string $key): self
   {
@@ -143,10 +198,15 @@ abstract class Model
   }
 
   /**
-   * @throws NotFoundException
-   * @throws ValidationException
-   * @throws PDOException
-   * @throws UnknownException
+   * Update the row having the given key
+   * 
+   * @param string $key the key of the row to update
+   * @param array $new_fields the fields to update
+   * @return self the updated row as a model instance
+   * @throws NotFoundException if no such row was found
+   * @throws ValidationException on data error
+   * @throws PDOException on PDO error
+   * @throws UnknownException on unknown error
    */
   public static function update(string $key, array $new_fields): self
   {

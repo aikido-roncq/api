@@ -4,6 +4,9 @@ namespace App\Exceptions;
 
 use Utils\Http;
 
+/**
+ * Exception thrown when data does not pass the validation rules
+ */
 class ValidationException extends HttpException
 {
   private array $errors = [];

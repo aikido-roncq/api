@@ -8,14 +8,27 @@ namespace Utils;
 class Logger
 {
   /**
-   * Info message
+   * Debug log
+   */
+  private const DEBUG = 'DEBUG';
+
+  /**
+   * Info log
    */
   private const INFO = 'INFO';
 
   /**
-   * Error message
+   * Error log
    */
   private const ERROR = 'ERROR';
+
+  /**
+   * Create a debug log
+   */
+  public static function debug(string $message): void
+  {
+    self::log(self::DEBUG, $message);
+  }
 
   /**
    * Create an info log

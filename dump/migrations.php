@@ -18,6 +18,8 @@ $migrations = array_filter($scannedDir, function ($entry) use ($baseDir) {
   return !is_dir("$baseDir/$entry");
 });
 
+Logger::debug("starting migrations in directory $scannedDir");
+
 foreach ($migrations as $migration) {
   $query = file_get_contents("$migrationsDir/$migration");
 

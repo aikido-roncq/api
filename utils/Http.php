@@ -2,6 +2,9 @@
 
 namespace Utils;
 
+/**
+ * HTTP response codes
+ */
 abstract class Http
 {
   // [Informational 1xx]

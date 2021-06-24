@@ -21,10 +21,19 @@ use ReflectionClass;
 
 define('ROOT', dirname(__DIR__));
 
+/**
+ * Application entrypoint
+ */
 class App
 {
+  /**
+   * The path to the views
+   */
   public const VIEWS_PATH = ROOT . '/app/Views';
 
+  /**
+   * The list of controllers
+   */
   const CONTROLLERS = [
     ArticlesController::class,
     CorsController::class,
@@ -33,6 +42,9 @@ class App
     UsersController::class,
   ];
 
+  /**
+   * The list of middlewares
+   */
   const MIDDLEWARES = [
     ParsedBodyMiddleware::class,
     JsonMiddleware::class,
@@ -40,6 +52,9 @@ class App
     CorsMiddleware::class,
   ];
 
+  /**
+   * Create the application
+   */
   public function __construct()
   {
     Dotenv::createImmutable(ROOT)->load();
@@ -54,18 +69,34 @@ class App
     $app->run();
   }
 
+  /**
+   * Register the middlewares
+   * 
+   * @param SlimApp $app the Slim app instance
+   */
   private static function registerMiddlewares(SlimApp $app)
   {
     foreach (self::MIDDLEWARES as $middleware)
       $app->add($middleware);
   }
 
+  /**
+   * Register the controllers
+   * 
+   * @param SlimApp $app the Slim app instance
+   */
   private static function registerControllers(SlimApp $app)
   {
     foreach (self::CONTROLLERS as $controller)
       self::registerController($controller, $app);
   }
 
+  /**
+   * Register a single controller
+   * 
+   * @param string $controller the controller to register
+   * @param SlimApp $app the Slim app instance
+   */
   private static function registerController(string $controller, SlimApp $app)
   {
     $reflection = new ReflectionClass($controller);

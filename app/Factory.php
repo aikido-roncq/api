@@ -4,10 +4,21 @@ namespace App;
 
 use PDO;
 
+/**
+ * Factory class
+ */
 abstract class Factory
 {
+  /**
+   * The PDO singleton
+   */
   private static ?PDO $pdo = null;
 
+  /**
+   * Get the PDO instance (if it does not exist, create it)
+   * 
+   * @return PDO the PDO instance
+   */
   public static function pdo(): PDO
   {
     if (is_null(self::$pdo)) {

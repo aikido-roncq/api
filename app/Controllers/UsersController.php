@@ -12,16 +12,31 @@ use App\Middlewares\AuthMiddleware;
 use Exception;
 use Utils\Validation;
 use PHPMailer\PHPMailer\PHPMailer;
+use RuntimeException;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use Utils\Arrays;
 use Utils\Http;
 use Utils\Logger;
 
+/**
+ * Controller dealing with users related actions
+ */
 class UsersController extends Controller
 {
+  /**
+   * Login to the application
+   * 
+   * @param Request $req the request
+   * @param Response $res the current response
+   * @return Response the final response
+   * @throws ValidationException on data error
+   * @throws PDOException on PDO error
+   * @throws UnknownException on unknown error
+   * @throws RuntimeException on body writing failure
+   */
   #[Route('/login', 'POST')]
-  public function login(Request $req, Response $res)
+  public function login(Request $req, Response $res): Response
   {
     if (AuthMiddleware::isLoggedIn($req)) {
       Logger::info('already logged in');
@@ -64,8 +79,18 @@ class UsersController extends Controller
     return self::send($res, ['token' => $connection->token]);
   }
 
+  /**
+   * Logout from the application
+   * 
+   * @param Request $req the request
+   * @param Response $res the current response
+   * @return Response the final response
+   * @throws ValidationException on data error
+   * @throws PDOException on PDO error
+   * @throws UnknownException on unknown error
+   */
   #[Route('/logout', 'POST')]
-  public function logout(Request $req, Response $res)
+  public function logout(Request $req, Response $res): Response
   {
     try {
       $token = AuthMiddleware::getToken($req);
@@ -77,8 +102,18 @@ class UsersController extends Controller
     return $res->withStatus(Http::RESET_CONTENT);
   }
 
+  /**
+   * Send a message to the team
+   * 
+   * @param Request $req the request
+   * @param Response $res the current response
+   * @return Response the final response
+   * @throws ValidationException on data error
+   * @throws UnknownException on unknown error
+   * @throws Exception if the any mail fails to send
+   */
   #[Route('/contact', 'POST')]
-  public function contact(Request $req, Response $res)
+  public function contact(Request $req, Response $res): Response
   {
     $data = $req->getParsedBody();
 
@@ -115,10 +150,14 @@ class UsersController extends Controller
   }
 
   /**
-   * @throws UnknownException
-   * @throws Exception
+   * Send a mail from given data
+   * 
+   * @param array $data mail data (email address, content...)
+   * @param array $options mail options (sender, recipient, subject...)
+   * @throws Exception if the mail fails to send
+   * @throws UnknownException if the mail fails to send
    */
-  private static function sendMail(array $data, array $options)
+  private static function sendMail(array $data, array $options): void
   {
     $data = Arrays::filterKeys($data, ['name', 'email', 'content']);
     $data['content'] = htmlentities($data['content']);

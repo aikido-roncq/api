@@ -13,8 +13,18 @@ use Slim\Psr7\Response;
 use Utils\Http;
 use Utils\Logger;
 
+/**
+ * Middleware to handle errors
+ */
 class ErrorsMiddleware
 {
+  /**
+   * Try to proceed the request and handle potential errors
+   * 
+   * @param Request $req the request
+   * @param RequestHandler $handler the request handler
+   * @return Response the final response
+   */
   public function __invoke(Request $req, RequestHandler $handler): Response
   {
     try {
@@ -34,6 +44,14 @@ class ErrorsMiddleware
     }
   }
 
+  /**
+   * Handle the exception passed as first parameter
+   * 
+   * @param Exception $e the exception to handle
+   * @param int $code the exception code to send
+   * @param array $errors additional errors, especially on input fields
+   * @throws Exception on body writing failure
+   */
   private static function handle(Exception $e, int $code, array $errors = [])
   {
     $res = new Response();

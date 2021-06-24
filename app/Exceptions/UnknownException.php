@@ -4,6 +4,9 @@ namespace App\Exceptions;
 
 use Utils\Http;
 
+/**
+ * Exception thrown when a unknown error occurs
+ */
 class UnknownException extends HttpException
 {
   public function __construct(string $message)

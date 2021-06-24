@@ -2,6 +2,7 @@
 
 use App\Factory;
 use Dotenv\Dotenv;
+use Utils\Logger;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -17,7 +18,12 @@ $migrations = array_filter($scannedDir, function ($entry) use ($baseDir) {
   return !is_dir("$baseDir/$entry");
 });
 
-foreach ($migrations as  $migration) {
+foreach ($migrations as $migration) {
   $query = file_get_contents("$migrationsDir/$migration");
-  var_dump($pdo->exec($query));
+
+  if ($pdo->exec($query)) {
+    Logger::info("OK: $migration");
+  } else {
+    Logger::error("FAILED: $migration");
+  }
 }

@@ -4,16 +4,30 @@ namespace App\Models;
 
 use App\Exceptions\NotFoundException;
 use App\Config;
+use App\Exceptions\ValidationException;
+use PDOException;
 use Utils\Logger;
 
+/**
+ * Connections model
+ */
 class Connections extends Model
 {
+  /**
+   * Primary key
+   */
   protected static string $pk = 'token';
 
+  /**
+   * Table keys
+   */
   protected static array $keys = [
     'token', 'iat', 'exp'
   ];
 
+  /**
+   * Validation rules
+   */
   protected static array $rules = [
     'required' => ['token', 'iat', 'exp'],
     'dateFormat' => [
@@ -22,8 +36,18 @@ class Connections extends Model
     ]
   ];
 
+  /**
+   * Fields labels
+   */
   protected static array $labels = [];
 
+  /**
+   * Create a new connection
+   * 
+   * @param array $fields the fields
+   * @return self the newly created connection
+   * @throws ValidationException on fields error
+   */
   public static function make(array $fields = []): self
   {
     $fields = [
@@ -35,6 +59,12 @@ class Connections extends Model
     return new static($fields);
   }
 
+  /**
+   * @throws NotFoundException
+   * @throws ValidationException
+   * @throws PDOException
+   * @throws UnknownException
+   */
   public static function revoke(string $token)
   {
     self::update($token, [
@@ -42,6 +72,9 @@ class Connections extends Model
     ]);
   }
 
+  /**
+   * @throws PDOException
+   */
   public static function isValid(string $token): bool
   {
     try {

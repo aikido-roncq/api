@@ -6,8 +6,18 @@ use Slim\Psr7\Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response;
 
+/**
+ * Controller that adds CORS headers
+ */
 class CorsMiddleware
 {
+  /**
+   * Add CORS headers to the response.
+   * 
+   * @param Request $req the request
+   * @param RequestHandler the request handler
+   * @param Response the final response
+   */
   public function __invoke(Request $req, RequestHandler $handler): Response
   {
     $res = $handler->handle($req);

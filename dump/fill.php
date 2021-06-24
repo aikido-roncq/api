@@ -52,4 +52,3 @@ for ($i = 0; $i < N_EVENTS; $i++) {
     ->values(compact('start_date', 'end_date', 'title', 'info'))
     ->execute();
 }
-

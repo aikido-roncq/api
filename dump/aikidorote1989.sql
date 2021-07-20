@@ -73,6 +73,17 @@ CREATE TABLE `gallery` (
   `caption` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `migrations`
+--
+
+CREATE TABLE `migrations` (
+  `script` VARCHAR(255) NOT NULL,
+  `installed_on` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+) ENGINE = InnoDB;
+
 --
 -- Indexes for dumped tables
 --
@@ -100,6 +111,12 @@ ALTER TABLE `events`
 --
 ALTER TABLE `gallery`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `migrations`
+--
+ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`script`);
 
 --
 -- AUTO_INCREMENT for dumped tables

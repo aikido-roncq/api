@@ -3,3 +3,4 @@ vendor/
 public/assets/gallery/*
 logs/*
 !.gitkeep
+.idea/

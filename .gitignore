@@ -7,4 +7,8 @@ logs/*
 .idea/
 =======
 *.cache
+<<<<<<< HEAD
 >>>>>>> e6cae15 (feat: add github actions (#27))
+=======
+.idea/
+>>>>>>> 56d937b (chore: add .idea folder to .gitignore)

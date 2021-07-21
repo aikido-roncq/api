@@ -2,7 +2,7 @@
 
 namespace App\Middlewares;
 
-use App\Exceptions\LoggedOutException;
+use App\Exceptions\HttpException;
 use App\Models\Connections;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response;
@@ -48,7 +48,7 @@ class AuthMiddleware
   {
     try {
       $token = self::getToken($req);
-    } catch (LoggedOutException $e) {
+    } catch (HttpException $e) {
       return false;
     }
 
@@ -60,14 +60,14 @@ class AuthMiddleware
    * 
    * @param Request $req the request
    * @return string the token
-   * @throws LoggedOutException if the token does not exist
+   * @throws HttpException if the token does not exist
    */
   public static function getToken(Request $req): string
   {
     $authorization = $req->getHeaderLine('Authorization');
 
     if (!preg_match('/Bearer (.+)/', $authorization, $matches)) {
-      throw new LoggedOutException('no token was provided', 400);
+      throw new HttpException('no token was provided', Http::UNAUTHORIZED);
     }
 
     return $matches[1];

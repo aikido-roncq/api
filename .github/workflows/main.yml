@@ -22,7 +22,7 @@ jobs:
       DB_USER: root
       DB_PASS: root
       DB_NAME: aikidorote1989
-      DB_HOST: aikido-database
+      DB_HOST: localhost
       # Credentials
       ADMIN_USER: ${{ secrets.ADMIN_USER }}
       ADMIN_PW: ${{ secrets.ADMIN_PW }}

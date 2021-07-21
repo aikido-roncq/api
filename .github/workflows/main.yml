@@ -37,7 +37,7 @@ jobs:
       - name: Build the docker-compose stack
         run: |
           docker-compose -f docker-compose.yml up -d
-          sleep 10
+          sleep 20
 
       - name: Install dependencies
         run: composer install

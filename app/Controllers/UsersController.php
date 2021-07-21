@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Attributes\Route;
-use App\Exceptions\LoggedOutException;
+use App\Exceptions\HttpException;
 use App\Exceptions\NotFoundException;
 use App\Models\Connections;
 use App\Exceptions\UnknownException;
@@ -95,11 +95,29 @@ class UsersController extends Controller
     try {
       $token = AuthMiddleware::getToken($req);
       Connections::revoke($token);
-    } catch (NotFoundException | LoggedOutException $e) {
+    } catch (NotFoundException | HttpException $e) {
       Logger::info('user was not logged in');
     }
 
     return $res->withStatus(Http::RESET_CONTENT);
+  }
+
+  /**
+   * Validate the provided token
+   * 
+   * @param Request $req the request
+   * @param Response $res the current response
+   * @return Response the final response
+   */
+  #[Route('/validate', 'POST')]
+  public function validate(Request $req, Response $res): Response
+  {
+    $token = AuthMiddleware::getToken($req);
+    $isValid = Connections::isValid($token);
+    if (!$isValid) {
+      return $res->withStatus(Http::FORBIDDEN);
+    }
+    return $res;
   }
 
   /**

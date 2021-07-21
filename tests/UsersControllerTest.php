@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use Utils\Http;
+
 class UsersControllerTest extends ControllerTest
 {
   // ========================================================================
@@ -73,6 +75,49 @@ class UsersControllerTest extends ControllerTest
 
     // Assert
     $this->assertEquals(205, $res->getStatusCode());
+  }
+
+  // ========================================================================
+  // POST /validate
+  // ========================================================================
+  public function testValidateSuccessfulWithValidToken()
+  {
+    // Arrange
+    $res = $this->login();
+    $token = $this->getBody($res)['token'];
+
+    // Act
+    $res = $this->client->post('/validate', [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ]
+    ]);
+
+    // Assert
+    $this->assertEquals(200, $res->getStatusCode());
+  }
+
+  public function testValidateReturns403WhenTokenIsInvalid()
+  {
+    // Arrange
+    $this->expectExceptionCode(403);
+    $token = 'invalid:token';
+
+    // Act
+    $this->client->post('/validate', [
+      'headers' => [
+        'Authorization' => "Bearer $token"
+      ]
+    ]);
+  }
+
+  public function testValidateReturns401WhenTokenIsMissing()
+  {
+    // Arrange
+    $this->expectExceptionCode(Http::UNAUTHORIZED);
+
+    // Act
+    $this->client->post('/validate');
   }
 
   // ========================================================================

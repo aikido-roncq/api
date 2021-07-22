@@ -78,7 +78,7 @@ class UsersControllerTest extends ControllerTest
   }
 
   // ========================================================================
-  // POST /validate
+  // GET /validate
   // ========================================================================
   public function testValidateSuccessfulWithValidToken()
   {
@@ -87,7 +87,7 @@ class UsersControllerTest extends ControllerTest
     $token = $this->getBody($res)['token'];
 
     // Act
-    $res = $this->client->post('/validate', [
+    $res = $this->client->get('/validate', [
       'headers' => [
         'Authorization' => "Bearer $token"
       ]
@@ -104,7 +104,7 @@ class UsersControllerTest extends ControllerTest
     $token = 'invalid:token';
 
     // Act
-    $this->client->post('/validate', [
+    $this->client->get('/validate', [
       'headers' => [
         'Authorization' => "Bearer $token"
       ]
@@ -117,7 +117,7 @@ class UsersControllerTest extends ControllerTest
     $this->expectExceptionCode(Http::UNAUTHORIZED);
 
     // Act
-    $this->client->post('/validate');
+    $this->client->get('/validate');
   }
 
   // ========================================================================

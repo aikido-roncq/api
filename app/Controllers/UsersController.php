@@ -109,7 +109,7 @@ class UsersController extends Controller
    * @param Response $res the current response
    * @return Response the final response
    */
-  #[Route('/validate', 'POST')]
+  #[Route('/validate', 'GET')]
   public function validate(Request $req, Response $res): Response
   {
     $token = AuthMiddleware::getToken($req);

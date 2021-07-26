@@ -13,4 +13,6 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp
 
 RUN docker-php-ext-install pdo_mysql gd
 
+RUN chown -R www-data:www-data /var/www/html
+
 USER root

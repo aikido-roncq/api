@@ -2,13 +2,12 @@
 
 namespace Tests;
 
-use Cocur\Slugify\Slugify;
 use Exception;
 
 class ArticlesControllerTest extends ControllerTest
 {
   protected const BASE_URI = '/articles';
-  protected const KEYS = ['date', 'slug', 'title', 'content'];
+  protected const KEYS = ['date', 'title', 'content'];
   protected const PK = 'id';
 
   // ========================================================================
@@ -225,13 +224,10 @@ class ArticlesControllerTest extends ControllerTest
     ]);
 
     $newArticle = self::getBody($res);
-    $newSlug = (new Slugify)->slugify($randomTitle);
 
     $this->assertEquals(200, $res->getStatusCode());
     $this->verifyKeys($newArticle);
-    $this->assertTrue(strpos($newArticle['slug'], $newSlug) == 0);
     $this->assertEquals($randomTitle, $newArticle['title']);
-    $this->assertNotEquals($oldArticle['slug'], $newArticle['slug']);
     $this->assertEquals($oldArticle['content'], $newArticle['content']);
     $this->assertEquals($oldArticle['date'], $newArticle['date']);
     $this->assertEquals($oldArticle['id'], $newArticle['id']);

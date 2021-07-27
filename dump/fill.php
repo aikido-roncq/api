@@ -1,7 +1,6 @@
 <?php
 
 use App\Factory;
-use Cocur\Slugify\Slugify;
 use Faker\Factory as FakerFactory;
 use Dotenv\Dotenv;
 use Ludal\QueryBuilder\QueryBuilder;
@@ -16,7 +15,6 @@ const N_IMAGES = 10;
 
 $faker = FakerFactory::create();
 $builder = new QueryBuilder(Factory::pdo());
-$slugify = new Slugify();
 
 $builder->deleteFrom('articles')->execute();
 $builder->deleteFrom('events')->execute();
@@ -26,13 +24,12 @@ $builder->deleteFrom('connections')->execute();
 // INSERT ARTICLES
 for ($i = 0; $i < N_ARTICLES; $i++) {
   $title = $faker->words(4, true);
-  $slug = $slugify->slugify($title);
   $content = "<p>{$faker->paragraphs(3, true)}</p>";
   $date = $faker->dateTimeBetween('-5 months', 'now')->format('Y-m-d H:i:s');
 
   $builder
     ->insertInto('articles')
-    ->values(compact('title', 'content', 'slug', 'date'))
+    ->values(compact('title', 'content', 'date'))
     ->execute();
 }
 

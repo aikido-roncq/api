@@ -3,7 +3,6 @@
   "description": "",
   "require": {
     "vlucas/phpdotenv": "^5.2",
-    "cocur/slugify": "^4.0",
     "phpmailer/phpmailer": "^6.2",
     "ludal/mysql-querybuilder": "^0.5.1",
     "ext-gd": "*",

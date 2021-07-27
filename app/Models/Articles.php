@@ -2,11 +2,7 @@
 
 namespace App\Models;
 
-use App\Exceptions\NotFoundException;
-use App\Exceptions\UnknownException;
 use App\Exceptions\ValidationException;
-use Cocur\Slugify\Slugify;
-use PDOException;
 
 /**
  * Articles model
@@ -27,7 +23,7 @@ class Articles extends Model
    * Table keys
    */
   protected static array $keys = [
-    'id', 'date', 'slug', 'title', 'content'
+    'id', 'date', 'title', 'content'
   ];
 
   /**
@@ -35,7 +31,7 @@ class Articles extends Model
    */
   protected static array $rules = [
     'required' => [
-      'date', 'slug', 'title', 'content'
+      'date', 'title', 'content'
     ],
     'lengthBetween' => [
       ['title', 5, 50]
@@ -65,43 +61,7 @@ class Articles extends Model
    */
   protected static function make(array $fields = []): self
   {
-    if (array_key_exists('title', $fields))
-      $fields['slug'] = self::slugify($fields['title']);
-
     $fields['date'] = date(self::DATE_FORMAT);
-
     return new self($fields);
-  }
-
-  /**
-   * Update an article from its primary key
-   * 
-   * @param string $key the key of the article
-   * @param array $fields the fields to update
-   * @return self the newly created article
-   * @throws ValidationException on data error
-   * @throws NotFoundException if the article doesn't exist
-   * @throws PDOException on PDO error
-   * @throws UnknownException on unknown error
-   */
-  public static function update(string $key, array $fields): self
-  {
-    if (array_key_exists('title', $fields))
-      $fields['slug'] = self::slugify($fields['title']);
-
-    return parent::update($key, $fields);
-  }
-
-  /**
-   * Convert the title to a slug
-   * 
-   * @param string $title the title to slugify
-   * @return string the slugified title
-   */
-  private static function slugify(string $title): string
-  {
-    $slug = (new Slugify)->slugify($title);
-    $token = hash('crc32', microtime());
-    return sprintf('%s-%s', $slug, $token);
   }
 }

@@ -26,7 +26,7 @@ class Gallery extends Model
     'required' => ['src'],
     'optional' => ['caption'],
     'lengthBetween' => [
-      ['caption', 5, 250]
+      ['caption', 5, 150]
     ],
     'dateFormat' => [
       ['added', 'Y-m-d H:i:s']

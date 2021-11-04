@@ -130,16 +130,16 @@
         },
         {
             "name": "ludal/mysql-querybuilder",
-            "version": "v0.5.1",
+            "version": "v0.5.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/iamludal/MySQL-QueryBuilder.git",
-                "reference": "b03007a2716111ef67f167c26ad3b61d7c16c751"
+                "url": "https://github.com/iamludal/mysql-querybuilder.git",
+                "reference": "9d962ce6c1456b19bcac347e9e62b9ae5c09b16e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/iamludal/MySQL-QueryBuilder/zipball/b03007a2716111ef67f167c26ad3b61d7c16c751",
-                "reference": "b03007a2716111ef67f167c26ad3b61d7c16c751",
+                "url": "https://api.github.com/repos/iamludal/mysql-querybuilder/zipball/9d962ce6c1456b19bcac347e9e62b9ae5c09b16e",
+                "reference": "9d962ce6c1456b19bcac347e9e62b9ae5c09b16e",
                 "shasum": ""
             },
             "require": {
@@ -175,10 +175,10 @@
                 "sql"
             ],
             "support": {
-                "issues": "https://github.com/iamludal/MySQL-QueryBuilder/issues",
-                "source": "https://github.com/iamludal/MySQL-QueryBuilder/tree/v0.5.1"
+                "issues": "https://github.com/iamludal/mysql-querybuilder/issues",
+                "source": "https://github.com/iamludal/mysql-querybuilder/tree/v0.5.2"
             },
-            "time": "2020-12-22T17:50:39+00:00"
+            "time": "2021-10-26T16:53:54+00:00"
         },
         {
             "name": "nikic/fast-route",
@@ -3889,5 +3889,5 @@
         "ext-gd": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }

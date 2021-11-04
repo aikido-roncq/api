@@ -1,13 +1,6 @@
 name: CI
 
-on:
-  push:
-    branches: [master, develop]
-  pull_request:
-    branches: [master, develop]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+on: [push, pull_request]
 
 jobs:
   main:
@@ -36,7 +29,7 @@ jobs:
 
       - name: Build the docker-compose stack
         run: |
-          docker-compose -f docker-compose.yml up -d
+          docker-compose up -d
           sleep 10
 
       - name: Install dependencies
@@ -45,8 +38,8 @@ jobs:
       - name: Create .env
         run: docker exec aikido-php chmod +x scripts/setup_env.sh && ./scripts/setup_env.sh
 
-      # - name: Run migrations
-      #   run: docker exec aikido-php php dump/migrations.php
+      - name: Run migrations
+        run: docker exec aikido-php php dump/migrations.php
 
       - name: Fill database
         run: docker exec aikido-php php dump/fill.php

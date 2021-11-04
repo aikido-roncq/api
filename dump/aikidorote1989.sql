@@ -82,7 +82,7 @@ CREATE TABLE `gallery` (
 CREATE TABLE `migrations` (
   `script` VARCHAR(255) NOT NULL,
   `installed_on` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-) ENGINE = InnoDB;
+) ENGINE=InnoDB;
 
 --
 -- Indexes for dumped tables

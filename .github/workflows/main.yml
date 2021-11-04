@@ -36,17 +36,20 @@ jobs:
 
       - name: Build the docker-compose stack
         run: |
-          docker-compose -f docker-compose.yml up -d
+          docker-compose up -d
           sleep 10
 
       - name: Install dependencies
         run: composer install
 
+      - name: Verify deps
+        run: docker exec aikido-php ls vendor
+
       - name: Create .env
         run: docker exec aikido-php chmod +x scripts/setup_env.sh && ./scripts/setup_env.sh
 
-      # - name: Run migrations
-      #   run: docker exec aikido-php php dump/migrations.php
+      - name: Run migrations
+        run: docker exec aikido-php php dump/migrations.php
 
       - name: Fill database
         run: docker exec aikido-php php dump/fill.php

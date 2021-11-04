@@ -16,3 +16,5 @@ do
     echo "$var=${!var}" >> .env
   fi
 done < $envExample
+
+cat .env

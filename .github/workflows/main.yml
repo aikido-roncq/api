@@ -36,7 +36,7 @@ jobs:
         run: composer install
 
       - name: Create .env
-        run: docker exec aikido-php scripts/setup_env.sh
+        run: docker exec aikido-php chmod +x scripts/setup_env.sh && ./scripts/setup_env.sh
 
       - name: Run migrations
         run: docker exec aikido-php php dump/migrations.php

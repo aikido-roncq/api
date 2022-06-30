@@ -25,7 +25,7 @@ services:
       - persistent:/var/lib/mysql
 
   phpmyadmin:
-    image: phpmyadmin
+    image: phpmyadmin:5.2.0
     container_name: aikido-phpmyadmin
     ports:
       - 8080:80
@@ -36,7 +36,7 @@ services:
       PMA_PASSWORD: root
 
   maildev:
-    image: maildev/maildev
+    image: maildev/maildev:2.0.5
     container_name: aikido-maildev
     ports:
       - 1080:1080

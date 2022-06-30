@@ -17,11 +17,11 @@ jobs:
       DB_NAME: aikidorote1989
       DB_HOST: aikido-database
       # Credentials
-      ADMIN_USER: ${{ secrets.ADMIN_USER }}
-      ADMIN_PW: ${{ secrets.ADMIN_PW }}
+      ADMIN_USER: "admin"
+      ADMIN_PW: "@dm!n-pwd"
       # Mail
       MAIL_HOST: aikido-maildev
-      MAIL_PORT: 25
+      MAIL_PORT: 1025
       MAILER: smtp
 
     steps:

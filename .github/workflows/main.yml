@@ -21,7 +21,7 @@ jobs:
       ADMIN_PW: "@dm!n-pwd"
       # Mail
       MAIL_HOST: aikido-maildev
-      MAIL_PORT: 25
+      MAIL_PORT: 1025
       MAILER: smtp
 
     steps:

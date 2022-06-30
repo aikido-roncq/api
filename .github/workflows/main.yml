@@ -17,8 +17,8 @@ jobs:
       DB_NAME: aikidorote1989
       DB_HOST: aikido-database
       # Credentials
-      ADMIN_USER: ${{ secrets.ADMIN_USER }}
-      ADMIN_PW: ${{ secrets.ADMIN_PW }}
+      ADMIN_USER: "admin"
+      ADMIN_PW: "@dm!n-pwd"
       # Mail
       MAIL_HOST: aikido-maildev
       MAIL_PORT: 25
@@ -36,7 +36,7 @@ jobs:
         run: composer install
 
       - name: Create .env
-        run: docker exec aikido-php chmod +x scripts/setup_env.sh && ./scripts/setup_env.sh
+        run: docker exec aikido-php scripts/setup_env.sh
 
       - name: Run migrations
         run: docker exec aikido-php php dump/migrations.php

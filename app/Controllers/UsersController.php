@@ -12,6 +12,7 @@ use App\Middlewares\AuthMiddleware;
 use Exception;
 use Utils\Validation;
 use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
 use RuntimeException;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
@@ -180,7 +181,7 @@ class UsersController extends Controller
     $data = Arrays::filterKeys($data, ['name', 'email', 'content']);
     $data['content'] = htmlentities($data['content']);
 
-    $mail = new PHPMailer();
+    $mail = new PHPMailer(true);
     $mail->CharSet = 'UTF-8';
     $mail->Mailer = $_ENV['MAILER'];
     $mail->Host = $_ENV['MAIL_HOST'];
@@ -193,11 +194,17 @@ class UsersController extends Controller
     $mail->Subject = $options['subject'];
     $mail->Body = self::getView($options['view'], $data);
 
-    if (!$mail->send()) {
+    try {
+      $mail->send();
+      Logger::info('Email sent successfully');
+    } catch (PHPMailerException $e) {
+      Logger::error('Email could not be sent. PHPMailerException: ' . $e->errorMessage());
+      $recipient = $options['to'];
+      throw new UnknownException("could not send mail to $recipient");
+    } catch (Exception $e) {
+      Logger::error('Email could not be sent. Exception: ' . $e->getMessage());
       $recipient = $options['to'];
       throw new UnknownException("could not send mail to $recipient");
     }
-
-    Logger::info('a new email has been sent');
   }
 }

@@ -7,29 +7,10 @@ concurrency:
   cancel-in-progress: ${{ github.ref_name != 'master' }}
 
 jobs:
-  main:
+  test:
     runs-on: ubuntu-latest
-
-    env:
-      # App
-      APP_ENV: dev
-      APP_LANG: fr
-      APP_HOST: http://aikido-php
-      # Database
-      DB_USER: root
-      DB_PASS: root
-      DB_NAME: aikidorote1989
-      DB_HOST: aikido-database
-      # Credentials
-      ADMIN_USER: "admin"
-      ADMIN_PW: "@dm!n-pwd"
-      # Mail
-      MAIL_HOST: aikido-maildev
-      MAIL_PORT: 1025
-      MAILER: smtp
-
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Build the docker-compose stack
         run: |
@@ -50,3 +31,17 @@ jobs:
 
       - name: Run tests
         run: docker exec aikido-php vendor/bin/phpunit
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: |
+          username=${{ secrets.SFTP_USERNAME }}
+          password=${{ secrets.SFTP_PASSWORD }}
+          host=${{ secrets.SFTP_HOST }}
+
+          touch hello_world
+          RSYNC_PASSWORD=$password rsync hello_world $username@$host:/home/$username/test

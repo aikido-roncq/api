@@ -20,6 +20,9 @@ jobs:
       - name: Install dependencies
         run: composer install
 
+      - name: Touch .env
+        run: touch .env
+
       - name: Run migrations
         run: docker exec aikido-php php dump/migrations.php
 

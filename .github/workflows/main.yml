@@ -7,34 +7,39 @@ concurrency:
   cancel-in-progress: ${{ github.ref_name != 'master' }}
 
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-  #     - name: Build the docker-compose stack
-  #       run: |
-  #         docker-compose up -d
-  #         sleep 10
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v1
 
-  #     - name: Install dependencies
-  #       run: composer install
+      - name: Generate .env file
+        run: doppler run envsubst < .env.example > .env
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_DEV }}
 
-  #     - name: Touch .env
-  #       run: touch .env
+      - name: Build the docker-compose stack
+        run: |
+          docker-compose up -d
+          sleep 10
 
-  #     - name: Run migrations
-  #       run: docker exec aikido-php php dump/migrations.php
+      - name: Install dependencies
+        run: composer install
 
-  #     - name: Fill database
-  #       run: docker exec aikido-php php dump/fill.php
+      - name: Run migrations
+        run: docker exec aikido-php php dump/migrations.php
 
-  #     - name: Run tests
-  #       run: docker exec aikido-php vendor/bin/phpunit
+      - name: Fill database
+        run: docker exec aikido-php php dump/fill.php
+
+      - name: Run tests
+        run: docker exec aikido-php vendor/bin/phpunit
 
   deploy:
     runs-on: ubuntu-latest
-    # needs: test
+    needs: test
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -45,33 +50,37 @@ jobs:
       - name: Generate .env file
         run: doppler run envsubst < .env.example > .env
         env:
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_DEV }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_PROD }}
 
-      - name: Echo env var
-        run: cat .env
+      - name: Setup ssh
+        run: |
+          mkdir ~/.ssh
+          ssh-keyscan -H ${{ secrets.SFTP_HOST }} >> ~/.ssh/known_hosts
 
-      # - name: Setup ssh
-      #   run: |
-      #     mkdir ~/.ssh
-      #     ssh-keyscan -H ${{ secrets.SFTP_HOST }} >> ~/.ssh/known_hosts
+      - name: Install lftp
+        run: sudo apt install -y lftp
 
-      # - name: Install lftp
-      #   run: sudo apt install -y lftp
+      - name: Upload files
+        run: |
+          username=${{ secrets.SFTP_USERNAME }}
+          password=${{ secrets.SFTP_PASSWORD }}
+          host=${{ secrets.SFTP_HOST }}
 
-      # - name: Upload files
-      #   run: |
-      #     username=${{ secrets.SFTP_USERNAME }}
-      #     password=${{ secrets.SFTP_PASSWORD }}
-      #     host=${{ secrets.SFTP_HOST }}
+          cmd_list="
+            set sftp:auto-confirm yes;
+            open $host;
+            login $username $password;
+            mirror --delete --reverse --verbose . test \
+              -x .* \
+              -i app \
+              -i public \
+              -x public/assets/gallery \
+              -i utils \
+              -i vendor \
+              -I .env \
+              -i composer.json \
+              -i composer.lock;
+            quit;
+          "
 
-      #     cmd_list="
-      #       set sftp:auto-confirm yes;
-      #       open $host;
-      #       login $username $password;
-      #       mirror --delete --reverse --verbose . test \
-      #         -X .* \
-      #         -X .**/* \
-      #       quit;
-      #     "
-
-      #     lftp -e "$cmd_list"
+          lftp -e "$cmd_list"

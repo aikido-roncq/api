@@ -48,5 +48,10 @@ jobs:
           username=${{ secrets.SFTP_USERNAME }}
           password=${{ secrets.SFTP_PASSWORD }}
           host=${{ secrets.SFTP_HOST }}
+          commands="
+            set sftp:auto-confirm yes;
+            mirror -e --reverse -X .* -X tests --verbose . /home/aikidorote/test;
+            quit;
+          "
 
-          RSYNC_PASSWORD=$password rsync hello_world $username@$host:/home/$username/test
+          lftp -e "$commands" -u $username,$password sftp://$host -p 22

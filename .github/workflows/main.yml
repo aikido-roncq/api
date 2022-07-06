@@ -57,7 +57,7 @@ jobs:
             set sftp:auto-confirm yes;
             open $host;
             login $username $password;
-            mirror -e --reverse --exclude .git --exclude tests --verbose . test;
+            mirror -e --reverse -x .git -x tests --verbose . test;
             quit;
           "
 

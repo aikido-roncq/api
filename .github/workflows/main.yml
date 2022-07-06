@@ -7,51 +7,58 @@ concurrency:
   cancel-in-progress: ${{ github.ref_name != 'master' }}
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+  # test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Build the docker-compose stack
-        run: |
-          docker-compose up -d
-          sleep 10
+  #     - name: Build the docker-compose stack
+  #       run: |
+  #         docker-compose up -d
+  #         sleep 10
 
-      - name: Install dependencies
-        run: composer install
+  #     - name: Install dependencies
+  #       run: composer install
 
-      - name: Touch .env
-        run: touch .env
+  #     - name: Touch .env
+  #       run: touch .env
 
-      - name: Run migrations
-        run: docker exec aikido-php php dump/migrations.php
+  #     - name: Run migrations
+  #       run: docker exec aikido-php php dump/migrations.php
 
-      - name: Fill database
-        run: docker exec aikido-php php dump/fill.php
+  #     - name: Fill database
+  #       run: docker exec aikido-php php dump/fill.php
 
-      - name: Run tests
-        run: docker exec aikido-php vendor/bin/phpunit
+  #     - name: Run tests
+  #       run: docker exec aikido-php vendor/bin/phpunit
 
   deploy:
     runs-on: ubuntu-latest
-    needs: test
+    # needs: test
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      - run: mkdir ~/.ssh
+      - name: Setup ssh
+        run: |
+          mkdir ~/.ssh
+          ssh-keyscan -H ${{ secrets.SFTP_HOST }} >> ~/.ssh/known_hosts
 
-      - run: touch hello_world
+      - name: Install lftp
+        run: sudo apt install -y lftp
 
-      - run: ssh-keyscan -H ${{ secrets.SFTP_HOST }} >> ~/.ssh/known_hosts
-
-      - run: |
+      - name: Upload files
+        run: |
           username=${{ secrets.SFTP_USERNAME }}
           password=${{ secrets.SFTP_PASSWORD }}
           host=${{ secrets.SFTP_HOST }}
-          commands="
+
+          cmd_list="
             set sftp:auto-confirm yes;
-            mirror -e --reverse -X .* -X tests --verbose . /home/aikidorote/test;
+            open $host;
+            login $username $password;
+            mirror -e --reverse --exclude .git --exclude tests --verbose . test;
             quit;
           "
 
-          lftp -e "$commands" -u $username,$password sftp://$host -p 22
+          lftp -e "$cmd_list"

@@ -61,7 +61,7 @@ jobs:
         run: sudo apt install -y lftp
 
       - name: Install dependencies
-        run: composer install
+        run: composer install --no-dev
 
       - name: Upload files
         run: |
@@ -80,9 +80,7 @@ jobs:
               -x public/assets/gallery \
               -i utils \
               -i vendor \
-              -I .env \
-              -i composer.json \
-              -i composer.lock;
+              -I .env;
             quit;
           "
 

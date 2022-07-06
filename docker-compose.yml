@@ -11,7 +11,7 @@ services:
     volumes:
       - ./:/var/www/html
     env_file:
-      - .github-actions.env
+      - .env
 
   db:
     image: mysql:5.6

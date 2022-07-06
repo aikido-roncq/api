@@ -42,11 +42,11 @@ jobs:
 
       - run: touch hello_world
 
+      - run: ssh-keyscan -H ${{ secrets.SFTP_HOST }} >> ~/.ssh/known_hosts
+
       - run: |
           username=${{ secrets.SFTP_USERNAME }}
           password=${{ secrets.SFTP_PASSWORD }}
           host=${{ secrets.SFTP_HOST }}
 
-      - run: ssh-keyscan -H $host >> ~/.ssh/known_hosts
-
-      - run: RSYNC_PASSWORD=$password rsync hello_world $username@$host:/home/$username/test
+          RSYNC_PASSWORD=$password rsync hello_world $username@$host:/home/$username/test

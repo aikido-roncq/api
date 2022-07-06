@@ -42,15 +42,10 @@ jobs:
       - name: Install Doppler CLI
         uses: dopplerhq/cli-action@v1
 
-      - name: Setup prod environment
-        run: |
-          doppler setup -p ${{ secrets.DOPPLER_PROJECT }} -c dev \
-            --token ${{ secrets.DOPPLER_TOKEN }}
-
       - name: Generate .env file
         run: doppler run envsubst < .env.example > .env
         env:
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_DEV }}
 
       - name: Echo env var
         run: cat .env

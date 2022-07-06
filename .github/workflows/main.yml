@@ -44,4 +44,5 @@ jobs:
           host=${{ secrets.SFTP_HOST }}
 
           touch hello_world
+          ssh-keyscan -H $host >> ~/.ssh/known_hosts
           RSYNC_PASSWORD=$password rsync hello_world $username@$host:/home/$username/test

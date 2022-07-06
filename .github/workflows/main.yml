@@ -60,6 +60,9 @@ jobs:
       - name: Install lftp
         run: sudo apt install -y lftp
 
+      - name: Install dependencies
+        run: composer install
+
       - name: Upload files
         run: |
           username=${{ secrets.SFTP_USERNAME }}

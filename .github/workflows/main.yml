@@ -7,29 +7,18 @@ concurrency:
   cancel-in-progress: ${{ github.ref_name != 'master' }}
 
 jobs:
-  main:
+  test:
     runs-on: ubuntu-latest
-
-    env:
-      # App
-      APP_ENV: dev
-      APP_LANG: fr
-      APP_HOST: http://aikido-php
-      # Database
-      DB_USER: root
-      DB_PASS: root
-      DB_NAME: aikidorote1989
-      DB_HOST: aikido-database
-      # Credentials
-      ADMIN_USER: "admin"
-      ADMIN_PW: "@dm!n-pwd"
-      # Mail
-      MAIL_HOST: aikido-maildev
-      MAIL_PORT: 1025
-      MAILER: smtp
-
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v1
+
+      - name: Generate .env file
+        run: doppler run envsubst < .env.example > .env
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_DEV }}
 
       - name: Build the docker-compose stack
         run: |
@@ -39,9 +28,6 @@ jobs:
       - name: Install dependencies
         run: composer install
 
-      - name: Create .env
-        run: docker exec aikido-php chmod +x scripts/setup_env.sh && ./scripts/setup_env.sh
-
       - name: Run migrations
         run: docker exec aikido-php php dump/migrations.php
 
@@ -50,3 +36,59 @@ jobs:
 
       - name: Run tests
         run: docker exec aikido-php vendor/bin/phpunit
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'master'
+    needs: test
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v1
+
+      - name: Generate .env file
+        run: doppler run envsubst < .env.example > .env
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_PROD }}
+
+      - name: Setup ssh
+        run: |
+          mkdir ~/.ssh
+          ssh-keyscan -H ${{ secrets.SFTP_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Install packages
+        run: sudo apt install -y lftp git-restore-mtime
+
+      - name: Restore git files modified time
+        run: git restore-mtime
+
+      - name: Install dependencies
+        run: composer install --no-dev
+
+      - name: Upload files
+        run: |
+          username=${{ secrets.SFTP_USERNAME }}
+          password=${{ secrets.SFTP_PASSWORD }}
+          host=${{ secrets.SFTP_HOST }}
+
+          cmd_list="
+            set sftp:auto-confirm yes;
+            open $host;
+            login $username $password;
+            mirror --delete --reverse --verbose --only-newer . api \
+              -x .* \
+              -i app \
+              -i public \
+              -x public/assets/gallery \
+              -x public/assets/images \
+              -i utils \
+              -i vendor \
+              -I .env;
+            quit;
+          "
+
+          lftp -e "$cmd_list"

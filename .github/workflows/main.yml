@@ -73,7 +73,7 @@ jobs:
             set sftp:auto-confirm yes;
             open $host;
             login $username $password;
-            mirror --delete --reverse --verbose -n . test \
+            mirror --delete --reverse --verbose --only-newer . api \
               -x .* \
               -i app \
               -i public \

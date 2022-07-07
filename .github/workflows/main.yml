@@ -39,7 +39,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    # if: github.ref_name == 'master'
+    if: github.ref_name == 'master'
     needs: test
     steps:
       - name: Checkout repo

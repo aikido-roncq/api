@@ -39,6 +39,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    if: github.ref_name == 'master'
     needs: test
     steps:
       - name: Checkout repo
@@ -58,10 +59,7 @@ jobs:
           ssh-keyscan -H ${{ secrets.SFTP_HOST }} >> ~/.ssh/known_hosts
 
       - name: Install packages
-        run: sudo apt install -y lftp git-restore-mtime
-
-      - name: Restore git files modified time
-        run: git restore-mtime
+        run: sudo apt install -y lftp
 
       - name: Install dependencies
         run: composer install --no-dev

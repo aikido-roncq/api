@@ -78,6 +78,7 @@ jobs:
               -i app \
               -i public \
               -x public/assets/gallery \
+              -x public/assets/images \
               -i utils \
               -i vendor \
               -I .env;

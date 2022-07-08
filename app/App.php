@@ -7,6 +7,7 @@ use App\Controllers\ArticlesController;
 use App\Controllers\CorsController;
 use App\Controllers\EventsController;
 use App\Controllers\GalleryController;
+use App\Controllers\HealthController;
 use App\Controllers\UsersController;
 use App\Middlewares\AuthMiddleware;
 use App\Middlewares\CorsMiddleware;
@@ -38,6 +39,7 @@ class App
     ArticlesController::class,
     CorsController::class,
     EventsController::class,
+    HealthController::class,
     GalleryController::class,
     UsersController::class,
   ];

@@ -1,5 +1,8 @@
 FROM php:8.0-apache
 
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD php scripts/healthcheck.php
+
 COPY .docker/000-default.conf /etc/apache2/sites-available/000-default.conf
 
 # To use htaccess

@@ -68,6 +68,8 @@ class App
 
     $app->addBodyParsingMiddleware();
 
+    header_remove('X-Powered-By');
+
     $app->run();
   }
 
